@@ -41,6 +41,9 @@ build/
 /.idea/misc.xml
 /.idea/encodings.xml
 
+### Generated SQLite database (odtwarzane z CSV przez DbImporter) ###
+cars.db
+
 ### LaTeX build artifacts ###
 *.aux
 *.log
