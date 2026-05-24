@@ -1,0 +1,433 @@
+% =====================================================================
+% Miary jakości podsumowań lingwistycznych T_1 - T_10 (T_11 - TODO)
+%
+% Źródło wzorów (rozdz. 8.2-8.4):
+%   Niewiadomski A., "Methods for the Linguistic Summarization of Data:
+%   Applications of Fuzzy Sets and Their Extensions",
+%   Akademicka Oficyna Wydawnicza EXIT, Warszawa 2008,
+%   ISBN 978-83-60434-40-6.
+%   Seria: Badania Systemowe, t. 60, IBS PAN.
+%
+% Konwencja oznaczeń (zgodna z monografią Niewiadomskiego):
+%   D            -- baza danych (zbiór m krotek)
+%   m            -- liczba krotek (rekordów) w bazie D
+%   n            -- liczba atrybutów branych pod uwagę w sumaryzatorze
+%   y_i, d_i     -- i-ty obiekt / krotka
+%   V_j(y_i)     -- wartość j-tego atrybutu obiektu y_i
+%   X_j          -- uniwersum j-tego atrybutu (przestrzeń rozważań)
+%   S            -- sumaryzator (ogólnie); S = S_1 t/s ... t/s S_n
+%   S_j          -- j-ty zbiór rozmyty wchodzący w skład sumaryzatora
+%                  na uniwersum X_j
+%   W            -- kwalifikator (ogólnie); W = W_{g_1} t/s ... t/s W_{g_x}
+%   W_{g_j}      -- j-ty zbiór rozmyty kwalifikatora na uniwersum X_{g_j}
+%   x            -- liczba atrybutów wchodzących w skład kwalifikatora
+%   Q            -- kwantyfikator lingwistyczny (zbiór rozmyty)
+%   X_Q          -- uniwersum kwantyfikatora ([0,1] dla względnego,
+%                  R^+ ∪ {0} dla bezwzględnego)
+%   mu_A         -- funkcja przynależności zbioru rozmytego A
+%   |A|          -- miara zbioru rozmytego A
+%                  (sigma-count = suma mu_A dla zbiorów skończonych,
+%                   całka funkcji mu_A dla nośników nieprzeliczalnych)
+%   supp(A)      -- nośnik zbioru A: { x : mu_A(x) > 0 }
+%   in(A)        -- stopień rozmycia (degree of fuzziness):
+%                  in(A) = |supp(A)| / |X_A|
+%   t, s         -- t-norma (AND) i t-conorma (OR)
+% =====================================================================
+
+\section*{Miary jakości podsumowań lingwistycznych}
+
+Rozdział referuje miary jakości podsumowań lingwistycznych zdefiniowane
+w monografii \cite{niewiadomski2008}, rozdz.~8.2--8.4. Pierwszych pięć
+miar ($T_1$--$T_5$) odpowiada klasycznym ujęciom Yagera oraz Kacprzyka,
+Yagera i Zadrożnego rozważanym w monografii; miary $T_6$--$T_{10}$ są
+oryginalną propozycją A.~Niewiadomskiego, sformułowaną w sekcji 8.4
+,,New quality measures of linguistic summaries''. Numeracja $T_i$
+i kolejność prezentacji są zgodne z tym źródłem.
+
+% =====================================================================
+% T_1
+% =====================================================================
+\subsection*{$T_1$ -- Stopień prawdziwości \\
+\textit{(degree of truth)}}
+
+\paragraph{Co mierzy.}
+Najbardziej znana miara jakości, wprowadzona przez Yagera. Określa,
+\emph{w jakim stopniu prawdziwe} jest zdanie podsumowujące w sensie
+rachunku zdań kwantyfikowanych lingwistycznie Zadeha; interpretowana
+jako ,,poziom zaufania'' do podsumowania.
+
+\paragraph{Wzór -- pierwsza forma ,,$Q\ P\ \text{are/have}\ S$''
+(bez kwalifikatora).}
+\begin{equation}
+\label{eq:T1-form1}
+    T_1\bigl(Q\ P\ \text{are/have}\ S\bigr)
+    \;=\;
+    \mu_Q\!\left( \frac{r}{M} \right),
+    \qquad
+    r = \sum_{i=1}^{m} \mu_S(d_i),
+\end{equation}
+gdzie $M = m$ dla kwantyfikatora \emph{względnego} i $M = 1$ dla
+\emph{bezwzględnego}. Funkcję $\mu_S$ dla sumaryzatora złożonego
+$S = S_1\ \text{AND/OR}\ \ldots\ \text{AND/OR}\ S_n$ wyznacza się
+operatorami t-normy $t$ (AND) i t-conormy $s$ (OR) na cylindrycznych
+rozszerzeniach do produktu uniwersów:
+\begin{equation}
+\label{eq:T1-mu-compound}
+    \mu_S(d_i) \;=\; \mu_{S_1}(d_i)\ t/s\ \mu_{S_2}(d_i)\ t/s\ \ldots\ t/s\ \mu_{S_n}(d_i).
+\end{equation}
+
+\paragraph{Wzór -- druga forma ,,$Q\ P\ \text{being/having}\ W\ \text{are/have}\ S$''
+(z kwalifikatorem).}
+\begin{equation}
+\label{eq:T1-form2}
+    T_1\bigl(Q\ P\ \text{being/having}\ W\ \text{are}\ S\bigr)
+    \;=\;
+    \mu_Q\!\left(
+        \frac{\sum_{i=1}^{m}\bigl(\mu_S(d_i) \wedge \mu_W(d_i)\bigr)}
+             {\sum_{i=1}^{m}\mu_W(d_i)}
+    \right).
+\end{equation}
+W mianowniku stoi $\Sigma\text{-count}(W)$ -- liczone są tylko krotki
+o niezerowej przynależności do kwalifikatora. W tej formie
+\textbf{możliwy jest tylko kwantyfikator względny}, ponieważ wartość
+ułamka jest z natury proporcją.
+
+\paragraph{Interpretacja.}
+$T_1 \in [0, 1]$. Im wyższa wartość, tym podsumowanie jest bardziej
+prawdziwe (informatywne). Wartość $T_1 = 0$ oznacza zdanie zupełnie
+nietrafne, a $T_1 = 1$ -- w pełni potwierdzone przez zawartość bazy.
+
+% =====================================================================
+% T_2
+% =====================================================================
+\subsection*{$T_2$ -- Stopień nieprecyzyjności \\
+\textit{(degree of imprecision)}}
+
+\paragraph{Co mierzy.}
+Ocenia, jak nieprecyzyjny jest \emph{sumaryzator}, na podstawie
+stopnia rozmycia ($\mathrm{in}$) zbiorów rozmytych go tworzących.
+Im szerszy nośnik zbiorów $S_j$, tym bardziej rozmyty (ogólny)
+sumaryzator.
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T2}
+    T_2 \;=\; 1 - \left( \prod_{j=1}^{n} \mathrm{in}(S_j) \right)^{1/n},
+    \qquad
+    \mathrm{in}(S_j) = \frac{|\mathrm{supp}(S_j)|}{|\mathcal{X}_j|}.
+\end{equation}
+Dla sumaryzatora prostego ($n=1$) wzór upraszcza się do
+$T_2 = 1 - \mathrm{in}(S)$.
+
+\paragraph{Interpretacja.}
+$T_2 \in [0, 1]$. \textbf{Im wyższa wartość, tym precyzyjniejszy
+(węższy) sumaryzator}, czyli lepsze podsumowanie. $T_2$ to dopełnienie
+średniej geometrycznej stopni rozmycia -- gdy $\mathrm{in}(S_j)$
+rośnie, $T_2$ maleje.
+
+% =====================================================================
+% T_3
+% =====================================================================
+\subsection*{$T_3$ -- Stopień pokrycia \\
+\textit{(degree of covering)}}
+
+\paragraph{Co mierzy.}
+Mówi, jaka część krotek pasujących (choćby częściowo) do kwalifikatora
+$W$ jest jednocześnie pokryta przez sumaryzator $S$. Pierwotnie
+zdefiniowana dla podsumowań drugiej formy.
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T3}
+    T_3 \;=\; \frac{\sum_{i=1}^{m} t_i}{\sum_{i=1}^{m} h_i},
+\end{equation}
+\begin{equation}
+\label{eq:T3-ti}
+    t_i = \begin{cases} 1, & \mu_S(d_i) > 0 \;\wedge\; \mu_W(d_i) > 0 \\ 0, & \text{w.p.p.}\end{cases},
+    \qquad
+    h_i = \begin{cases} 1, & \mu_W(d_i) > 0 \\ 0, & \text{w.p.p.}\end{cases}.
+\end{equation}
+Liczone są ostre wskaźniki należenia do nośnika, nie wartości $\mu$.
+
+Dla pierwszej formy (bez kwalifikatora) traktuje się ją jako szczególny
+przypadek, w którym $W = \mathcal{D}$ (,,być w bazie''), zatem
+$h_i^{*} = 1$ dla wszystkich krotek, co daje:
+\begin{equation}
+\label{eq:T3-star}
+    T_3^{*} \;=\; \frac{|\{ i : \mu_S(d_i) > 0\}|}{m} \;=\; \frac{|\mathrm{supp}(S \cap \mathcal{D})|}{m}.
+\end{equation}
+
+\paragraph{Interpretacja.}
+$T_3 \in [0, 1]$. Im wyższa wartość, tym więcej rekordów wpadających
+do kwalifikatora jest opisanych przez sumaryzator. Bardzo niskie
+wartości oznaczają, że zdanie odnosi się do pomijalnie małej części
+populacji (kwalifikator filtruje dużo, sumaryzator pokrywa mało).
+
+% =====================================================================
+% T_4
+% =====================================================================
+\subsection*{$T_4$ -- Stopień trafności \\
+\textit{(degree of appropriateness)}}
+
+\paragraph{Co mierzy.}
+Sprawdza, czy podsumowanie jest \emph{nietrywialne} -- czy mówi coś,
+czego nie dałoby się przewidzieć z samych częstości brzegowych
+poszczególnych etykiet. Porównuje rzeczywiste pokrycie $T_3$
+z iloczynem brzegowych częstości składowych sumaryzatora
+(oczekiwanym pokryciem przy ,,niezależności'' cech).
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T4-rj}
+    r_j \;=\; \frac{\sum_{i=1}^{m} g_{ij}}{m},
+    \qquad
+    g_{ij} = \begin{cases} 1, & \mu_{S_j}\bigl(V_j(y_i)\bigr) > 0 \\ 0, & \text{w.p.p.}\end{cases},
+\end{equation}
+\begin{equation}
+\label{eq:T4}
+    T_4 \;=\; \left| \prod_{j=1}^{n} r_j \;-\; T_3 \right|.
+\end{equation}
+$r_j$ -- udział rekordów spełniających pojedynczą $j$-tą etykietę
+sumaryzatora; $\prod_j r_j$ -- ,,oczekiwane'' pokrycie przy założeniu
+niezależności składowych.
+
+\paragraph{Interpretacja.}
+$T_4 \in [0, 1]$. \textbf{Im większa wartość, tym bardziej trafne
+(odkrywcze) podsumowanie} -- pokrycie znacząco różni się od
+oczekiwanego, co wskazuje na korelację cech ujętą przez konkretny
+spójnik AND/OR. $T_4$ bliskie zera oznacza, że pokrycie jest dokładnie
+takie, jak gdyby cechy były niezależne -- zdanie nie odkrywa nowej
+informacji.
+
+% =====================================================================
+% T_5
+% =====================================================================
+\subsection*{$T_5$ -- Długość podsumowania \\
+\textit{(length of summary)}}
+
+\paragraph{Co mierzy.}
+Karze podsumowania zbyt rozbudowane: im więcej zbiorów rozmytych
+sklejonych spójnikami AND/OR tworzy sumaryzator $S$, tym mniej
+czytelne (i mniej wartościowe) staje się zdanie.
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T5}
+    T_5 \;=\; 2 \cdot (0{,}5)^{|S|},
+\end{equation}
+gdzie $|S|$ to \emph{liczba zbiorów rozmytych}, z których złożony jest
+sumaryzator (uwaga: tu $|S|$ oznacza licznik składowych, a~nie miarę
+zbioru rozmytego). Wartości:
+$|S|=1 \Rightarrow T_5=1$,\;
+$|S|=2 \Rightarrow T_5=0{,}5$,\;
+$|S|=3 \Rightarrow T_5=0{,}25$, itd.
+
+\paragraph{Interpretacja.}
+$T_5 \in (0, 1]$. \textbf{Im wyższa wartość, tym krótsze (zwięźlejsze)
+podsumowanie}, czyli lepsze. Nie istnieją wartości spoza tego
+przedziału -- $T_5$ zawsze ma postać $2^{1-|S|}$.
+
+% =====================================================================
+% T_6
+% =====================================================================
+\subsection*{$T_6$ -- Stopień nieprecyzyjności kwantyfikatora \\
+\textit{(degree of quantifier imprecision)}}
+
+\paragraph{Co mierzy.}
+Pierwsza z miar oryginalnie zaproponowanych przez Niewiadomskiego
+\cite{niewiadomski2008}, sekcja~8.4.1. Analogiczna do $T_2$, ale
+dotyczy kształtu zbioru rozmytego $Q$ reprezentującego \emph{kwantyfikator},
+a nie sumaryzator. Im szerszy nośnik $Q$, tym mniej precyzyjny opis
+ilościowy.
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T6}
+    T_6 \;=\; 1 - \mathrm{in}(Q) \;=\; 1 - \frac{|\mathrm{supp}(Q)|}{|\mathcal{X}_Q|}.
+\end{equation}
+Mianownik sprowadza się do dwóch przypadków:
+\begin{itemize}
+    \item \textbf{kwantyfikator względny:} $|\mathcal{X}_Q| = 1$,
+    bo $\mathcal{X}_Q = [0, 1]$;
+    \item \textbf{kwantyfikator bezwzględny:} $|\mathcal{X}_Q| = m$,
+    czyli liczba krotek w bazie.
+\end{itemize}
+
+\paragraph{Interpretacja.}
+$T_6 \in [0, 1]$. \textbf{Im wyższa wartość, tym węższy nośnik
+kwantyfikatora}, czyli tym bardziej precyzyjny opis ,,ile''. Dla
+kwantyfikatorów ostrych (np.~\textsc{exactly~30} -- singleton
+$\{1{,}0/30\}$, lub \textsc{for all} -- $\{1{,}0/1\}$) zachodzi
+$T_6 = 0$, co intuicyjnie oznacza ich pełną precyzję na własnym
+uniwersum.
+
+% =====================================================================
+% T_7
+% =====================================================================
+\subsection*{$T_7$ -- Stopień kardynalności kwantyfikatora \\
+\textit{(degree of quantifier cardinality)}}
+
+\paragraph{Co mierzy.}
+Druga miara Niewiadomskiego \cite{niewiadomski2008}, sekcja~8.4.2.
+Inspirowana obserwacją, że im większa kardynalność $|Q|$, tym mniej
+precyzyjny kwantyfikator. \emph{Subtelnie różna od~$T_6$}: $T_6$ używa
+miary nośnika $Q$, $T_7$ -- miary samego zbioru rozmytego, dzięki
+czemu rozróżnia kwantyfikatory o tym samym nośniku, lecz różnym
+kształcie (np.~trójkąt vs.~trapez na tym samym przedziale).
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T7}
+    T_7 \;=\; 1 - \frac{|Q|}{|\mathcal{X}_Q|},
+\end{equation}
+gdzie $|Q| = \int \mu_Q(x)\,\mathrm{d}x$ (miara całkowa funkcji
+przynależności) lub $\sum_x \mu_Q(x)$ (sigma-count) dla zbiorów
+skończonych. Mianownik tak samo jak w $T_6$:
+$|\mathcal{X}_Q| = 1$ (względny) lub $m$ (bezwzględny).
+
+\paragraph{Interpretacja.}
+$T_7 \in [0, 1]$. Im wyższa wartość, tym mniejsza miara $|Q|$, czyli
+,,smuklejszy'' kwantyfikator -- bardziej precyzyjny.
+
+% =====================================================================
+% T_8
+% =====================================================================
+\subsection*{$T_8$ -- Stopień kardynalności sumaryzatora \\
+\textit{(degree of summarizer cardinality)}}
+
+\paragraph{Co mierzy.}
+Trzecia miara Niewiadomskiego \cite{niewiadomski2008}, sekcja~8.4.3.
+Ocenia łączną ,,smukłość'' sumaryzatora przez średnią geometryczną
+znormalizowanych miar zbiorów rozmytych $S_1, \ldots, S_n$. Im mniejsze
+miary $|S_j|$ względem swoich uniwersów, tym precyzyjniej etykiety
+opisują wartości atrybutów.
+
+\paragraph{Wzór.}
+\begin{equation}
+\label{eq:T8}
+    T_8 \;=\; 1 - \left( \prod_{j=1}^{n} \frac{|S_j|}{|\mathcal{X}_j|} \right)^{1/n}.
+\end{equation}
+
+\paragraph{Interpretacja.}
+$T_8 \in [0, 1]$. Im wyższa wartość, tym węższe (selektywniejsze)
+poszczególne etykiety na swoich uniwersach. \textbf{Uwaga:}
+normalizacja zachodzi przez \emph{uniwersum atrybutu}
+$|\mathcal{X}_j|$, a~nie przez liczbę rekordów w bazie. $T_8$ ocenia
+szerokość zbiorów na osi atrybutu, a~nie ich realną kardynalność
+,,w bazie''.
+
+% =====================================================================
+% T_9
+% =====================================================================
+\subsection*{$T_9$ -- Stopień nieprecyzyjności kwalifikatora \\
+\textit{(degree of qualifier imprecision)}}
+
+\paragraph{Co mierzy.}
+Czwarta miara Niewiadomskiego \cite{niewiadomski2008}, sekcja~8.4.4.
+Określona dla podsumowań drugiej formy ,,$Q\ P\ \text{being}\ W\
+\text{are}\ S$''. Analogon $T_2$ i~$T_6$: ocenia szerokość nośników
+zbiorów rozmytych tworzących \emph{kwalifikator} $W$.
+
+\paragraph{Wzór -- kwalifikator prosty.}
+\begin{equation}
+\label{eq:T9-single}
+    T_9 \;=\; 1 - \mathrm{in}(W),
+\end{equation}
+gdzie $\mathrm{in}(W) = |\mathrm{supp}(W)|/|\mathcal{X}_W|$.
+
+\paragraph{Wzór -- kwalifikator złożony z $W_{g_1}, \ldots, W_{g_x}$
+na uniwersach $\mathcal{X}_{g_1}, \ldots, \mathcal{X}_{g_x}$.}
+\begin{equation}
+\label{eq:T9-multi}
+    T_9 \;=\; 1 - \left( \prod_{j=1}^{x} \mathrm{in}(W_{g_j}) \right)^{1/x}.
+\end{equation}
+
+\paragraph{Interpretacja.}
+$T_9 \in [0, 1]$. Im wyższa wartość, tym węższy (precyzyjniej
+zdefiniowany) kwalifikator -- zdanie filtruje szczegółowo określoną
+podgrupę obiektów.
+
+% =====================================================================
+% T_10
+% =====================================================================
+\subsection*{$T_{10}$ -- Stopień kardynalności kwalifikatora \\
+\textit{(degree of qualifier cardinality)}}
+
+\paragraph{Co mierzy.}
+Piąta miara Niewiadomskiego \cite{niewiadomski2008}, sekcja~8.4.5.
+Bazuje na kardynalności (mierze) zbiorów $W_{g_j}$. Względem $T_9$
+relacja taka sama jak $T_7$ względem $T_6$: rozróżnia kwalifikatory
+o tym samym nośniku, lecz różnym kształcie.
+
+\paragraph{Wzór -- kwalifikator prosty.}
+\begin{equation}
+\label{eq:T10-single}
+    T_{10} \;=\; 1 - \frac{|W|}{|\mathcal{X}_g|}.
+\end{equation}
+
+\paragraph{Wzór -- kwalifikator złożony.}
+\begin{equation}
+\label{eq:T10-multi}
+    T_{10} \;=\; 1 - \left( \prod_{j=1}^{x} \frac{|W_{g_j}|}{|\mathcal{X}_{g_j}|} \right)^{1/x}.
+\end{equation}
+
+\paragraph{Interpretacja.}
+$T_{10} \in [0, 1]$. Im wyższa wartość, tym mniejsza miara
+$|W_{g_j}|$ względem $|\mathcal{X}_{g_j}|$ -- ,,smuklejszy''
+kwalifikator. \textbf{Uwaga:} tak jak $T_8$, miara normalizowana jest
+przez uniwersum atrybutu, a~nie przez liczbę rekordów w bazie. Nie
+mówi więc, ilu rekordów dotyczy kwalifikator, tylko jak wąsko jest
+on określony na osi swojego atrybutu.
+
+% =====================================================================
+% Goodness of summary (8.74)
+% =====================================================================
+\subsection*{Łączna jakość podsumowania \\
+\textit{(goodness of the summary)}}
+
+Łączną miarę jakości definiuje się jako średnią ważoną składowych
+miar~$T_i$ \cite[wzór~(8.74)]{niewiadomski2008}:
+\begin{equation}
+\label{eq:goodness}
+    T \;=\; T(T_1, \ldots, T_{10};\ w_1, \ldots, w_{10})
+    \;=\; \sum_{i=1}^{10} w_i \cdot T_i,
+    \qquad
+    \sum_{i=1}^{10} w_i = 1.
+\end{equation}
+Optymalne podsumowanie wybiera się jako:
+\begin{equation}
+\label{eq:goodness-argmax}
+    S^{*} \;=\; \arg\max_{S \in \mathbb{S}}\; \sum_{i=1}^{10} w_i \cdot T_i.
+\end{equation}
+Autor zaleca (gdy nic innego nie wpływa na wybór wag) ustawienie
+$w_1 = w_2 = w_4 = w_5 = w_6 = w_7 = w_8 (= w_3)$ dla podsumowań
+pierwszej formy oraz $w_1 = \ldots = w_{10}$ dla podsumowań drugiej
+formy (jednakowe wagi dla wszystkich miar).
+
+% =====================================================================
+% T_11 - placeholder
+% =====================================================================
+\subsection*{$T_{11}$ -- Długość kwalifikatora \\
+\textit{(length of qualifier)}}
+
+\textbf{TODO.} Miara nie pojawia się w monografii Niewiadomskiego
+\cite{niewiadomski2008} -- rozdz.~8.4 i~zbiorczy wzór~(8.74) obejmują
+wyłącznie $T_1$--$T_{10}$. $T_{11}$ jest najpewniej rozszerzeniem
+narzuconym przez prowadzącego (analogon $T_5$ dla kwalifikatora).
+Spodziewana postać przez analogię:
+\[
+    T_{11} \;=\; 2 \cdot (0{,}5)^{|W|},
+\]
+gdzie $|W|$ to liczba zbiorów rozmytych tworzących kwalifikator.
+Po znalezieniu wzoru w treści projektu lub materiałach prowadzącego
+sekcję uzupełnić.
+
+% =====================================================================
+% Bibliografia (do scalenia z głównym sprawozdaniem)
+% =====================================================================
+% \bibitem{niewiadomski2008}
+% Niewiadomski, A.: \textit{Methods for the Linguistic Summarization
+% of Data: Applications of Fuzzy Sets and Their Extensions}.
+% Akademicka Oficyna Wydawnicza EXIT, Warszawa 2008,
+% ISBN~978-83-60434-40-6. Seria: Badania Systemowe, t.~60,
+% Instytut Badań Systemowych PAN.
