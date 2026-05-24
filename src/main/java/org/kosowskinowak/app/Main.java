@@ -14,6 +14,10 @@ import org.kosowskinowak.summary.LabelExpression;
 import org.kosowskinowak.summary.Property;
 import org.kosowskinowak.summary.SingleSubjectSummary;
 import org.kosowskinowak.summary.SummaryGenerator;
+import org.kosowskinowak.summary.multi.MultiSubjectGenerator;
+import org.kosowskinowak.summary.multi.MultiSubjectMeasures;
+import org.kosowskinowak.summary.multi.MultiSubjectSummary;
+import org.kosowskinowak.summary.multi.Subject;
 import org.kosowskinowak.summary.quality.Quality;
 import org.kosowskinowak.summary.quality.QualityMeasures;
 import org.kosowskinowak.summary.quality.QualityWeights;
@@ -70,6 +74,35 @@ public final class Main {
                 .toList();
         printRanking("\nPODSUMOWANIA JEDNOPODMIOTOWE — FORMA 2 (kwalifikator: masa = ciężki) (TOP 15)",
                 form2, 15);
+
+        // --- Podsumowania WIELOPODMIOTOWE: BMW vs Toyota (formy I i IV) ---
+        printMultiSubject(config, records, "BMW", "Toyota");
+    }
+
+    private static void printMultiSubject(FuzzyConfig config, List<CarRecord> records,
+                                          String makeA, String makeB) {
+        Subject p1 = Subject.ofMake(makeA);
+        Subject p2 = Subject.ofMake(makeB);
+        MultiSubjectGenerator gen = new MultiSubjectGenerator(config);
+
+        List<MultiSubjectSummary> candidates = new java.util.ArrayList<>(gen.formIV(p1, p2));
+        candidates.addAll(gen.formI(p1, p2));
+        List<MultiScored> scored = candidates.stream()
+                .map(s -> new MultiScored(s, MultiSubjectMeasures.degreeOfTruth(s, records)))
+                .sorted(Comparator.comparingDouble((MultiScored x) -> x.t).reversed())
+                .toList();
+
+        System.out.printf("%n=== PODSUMOWANIA WIELOPODMIOTOWE — %s vs %s (formy I, IV) ===%n", makeA, makeB);
+        System.out.println("Ranking wg stopnia prawdziwości T (Niewiadomski, Superson 2014). "
+                + scored.size() + " kandydatów.");
+        int n = Math.min(20, scored.size());
+        for (int i = 0; i < n; i++) {
+            MultiScored s = scored.get(i);
+            System.out.printf("%2d. T=%.3f  | %s%n", i + 1, s.t, s.s.sentence());
+        }
+    }
+
+    private record MultiScored(MultiSubjectSummary s, double t) {
     }
 
     private static void printCompoundExamples(FuzzyConfig config, List<CarRecord> records,
