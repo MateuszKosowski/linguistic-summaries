@@ -21,4 +21,25 @@ public class FuzzySet {
     public String getName() {
         return name;
     }
+
+    public FuzzySet complement() {
+        return new FuzzySet(
+                "not " + name,
+                universe,
+                x -> 1.0 - mf.degreeOfBelonging(x));
+    }
+
+    public FuzzySet union(FuzzySet other) {
+        return new FuzzySet(
+                name + " ∪ " + other.name,
+                universe,
+                x -> Math.max(mf.degreeOfBelonging(x), other.mf.degreeOfBelonging(x)));
+    }
+
+    public FuzzySet intersect(FuzzySet other) {
+        return new FuzzySet(
+                name + " ∩ " + other.name,
+                universe,
+                x -> Math.min(mf.degreeOfBelonging(x), other.mf.degreeOfBelonging(x)));
+    }
 }
