@@ -690,13 +690,109 @@ Argumentem jest liczba obiektów spełniających warunek.}
 
 % =====================================================================
 \section{Narzędzia obliczeniowe: wybór/implementacja. Diagram UML klas do obliczeń rozmytych i generowania podsumowań}
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień 10 wg Harmonogramu Zajęć na WIKAMP KSR.}
 
-Diagram UML i zwięzły opis pakietu obliczeń rozmytych: źródło pakietu
-(zewnętrzny/własny/hybrydowy), przypis do literatury/źródeł. Krótka charakterystyka
-najważniejszych klas i podstawowych dla zadania ich metod. \\
+\subsection{Źródło pakietu obliczeniowego}
+Pakiet obliczeń rozmytych ma charakter \textbf{hybrydowy}. Trzon -- reprezentacja
+zbiorów rozmytych i ich własności, zmiennych lingwistycznych, kwantyfikatorów,
+sumaryzatorów/kwalifikatorów oraz podsumowań i ich miar jakości -- jest
+\emph{własną} implementacją, opartą o definicje z literatury przedmiotu
+(\cite{zadeh75}, \cite{zadeh83}, \cite{yager82}, \cite{kacprzyk-yager01},
+\cite{niewiadomski08}; podsumowania wielopodmiotowe wg \cite{superson14}).
+Jako składnik \emph{zewnętrzny} użyto wyłącznie biblioteki \texttt{jFuzzyLogic}
+\cite{jfuzzylogic} -- i to tylko do liczenia wartości trzech funkcji
+przynależności (trójkątnej, trapezoidalnej, gaussowskiej). Dostęp do danych
+realizuje sterownik \texttt{sqlite-jdbc} (relacyjna baza SQLite przez JDBC),
+a logowanie -- SLF4J/Logback. Całość budowana jest narzędziem Maven; zależności
+pobierane są automatycznie (\texttt{jFuzzyLogic} z repozytorium JitPack).
 
-Wersja JRE i inne wymogi niezbędne do uruchomienia aplikacji przez użytkownika na własnym komputerze.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{uml_classes.png}
+    \caption{Diagram klas UML pakietu obliczeń rozmytych i generowania
+    podsumowań. Pakiety: \texttt{fuzzy.set} (zbiory i przestrzeń rozważań),
+    \texttt{fuzzy.mf} (funkcje przynależności -- delegacja do
+    \texttt{jFuzzyLogic}), \texttt{fuzzy.linguistic} (zmienna lingwistyczna,
+    etykieta, kwantyfikator), \texttt{summary} (sumaryzator/kwalifikator,
+    podsumowania jednopodmiotowe), \texttt{summary.quality} (miary $T_1$--$T_{11}$),
+    \texttt{summary.multi} (podsumowania wielopodmiotowe, formy I--IV) oraz
+    \texttt{data} (rekordy i dostęp do bazy). Linie ciągłe oznaczają złożenie
+    (pole), przerywane -- zależność użycia; trójkąt -- realizację interfejsu.}
+    \label{fig:uml}
+\end{figure}
+
+\subsection{Charakterystyka najważniejszych klas}
+Poniżej zwięzły opis klas i ich kluczowych metod (rys.~\ref{fig:uml}).
+
+\paragraph{Pakiet \texttt{fuzzy.set} -- zbiory i przestrzeń rozważań.}
+\texttt{Universe} reprezentuje przestrzeń rozważań w dwóch wariantach: gęstym
+(\texttt{continuous}, równomierne próbkowanie) i dyskretnym (\texttt{discrete},
+co~1); metoda \texttt{samplePoints()} dostarcza punkty siatki do numerycznego
+liczenia własności. \texttt{FuzzySet} łączy nazwę, przestrzeń i funkcję
+przynależności; udostępnia własności wymagane w zadaniu -- \texttt{height()},
+\texttt{support()}, \texttt{alphaCut()}, \texttt{isNormal()}, \texttt{isEmpty()},
+\texttt{isConvex()} -- operacje teoriomnogościowe (\texttt{complement},
+\texttt{union}, \texttt{intersect}) oraz względne liczności nośnika i $\sigma$-count
+używane przez miary jakości. \texttt{ClassicSet} to odpowiednik zbioru klasycznego
+(twardy predykat 0/1) z tymi samymi operacjami. \texttt{Interval} (rekord)
+opisuje nośnik/$\alpha$-przekrój.
+
+\paragraph{Pakiet \texttt{fuzzy.mf} -- funkcje przynależności.}
+Interfejs funkcyjny \texttt{MembershipFunction} ma jedną metodę
+\texttt{degree(x)}. Klasy \texttt{TriangularMf}, \texttt{TrapezoidalMf},
+\texttt{GaussianMf} delegują obliczenie do \texttt{jFuzzyLogic} (z przycięciem
+wyniku do $[0,1]$). \texttt{Operations} dostarcza dopełnienie, sumę (t-konorma
+maksimum) i iloczyn (t-norma minimum) jako dekoratory funkcji przynależności.
+
+\paragraph{Pakiet \texttt{fuzzy.linguistic} -- warstwa lingwistyczna.}
+\texttt{LinguisticVariable} wiąże atrybut bazy z przestrzenią rozważań i zestawem
+etykiet; \texttt{degreeOf(label,x)} i \texttt{isValid(x)} obsługują przeliczanie
+i odrzucanie braków danych. \texttt{Label} (rekord) to nazwana etykieta nad
+zbiorem rozmytym. \texttt{Quantifier} reprezentuje kwantyfikator względny lub
+bezwzględny; \texttt{degree(quantity)} zwraca stopień dopasowania proporcji lub
+liczności.
+
+\paragraph{Pakiet \texttt{summary} -- podsumowania jednopodmiotowe.}
+Interfejs \texttt{LabelExpression} (z implementacjami \texttt{Property} -- pojedyncza
+etykieta, oraz \texttt{Connective} -- złożenie spójnikiem AND/OR) reprezentuje
+sumaryzator lub kwalifikator i liczy stopień przynależności rekordu
+(\texttt{degree(rec)}). \texttt{SingleSubjectSummary} składa kwantyfikator,
+opcjonalny kwalifikator i sumaryzator w zdanie (\texttt{sentence()}) w pierwszej
+lub drugiej formie. \texttt{SummaryGenerator} produkuje zbiory kandydujących
+podsumowań na podstawie konfiguracji.
+
+\paragraph{Pakiet \texttt{summary.quality} -- miary jakości.}
+\texttt{QualityMeasures.evaluate(\dots)} wyznacza w jednym przebiegu po rekordach
+komplet miar $T_1$--$T_{11}$ oraz wartość podsumowania optymalnego, zwracając
+rekord \texttt{Quality}. \texttt{QualityWeights} przechowuje znormalizowane wagi
+miar (sterowane z GUI) i liczy ważoną sumę.
+
+\paragraph{Pakiet \texttt{summary.multi} -- podsumowania wielopodmiotowe.}
+\texttt{Subject} to nazwany predykat wyróżniający rozłączny podmiot
+(np.~\texttt{ofMake} -- jedna marka). \texttt{MultiSubjectSummary} reprezentuje
+cztery formy (I--IV) porównujące podmioty $P_1$, $P_2$, z fabrykami
+\texttt{formI}\,/\,\texttt{formII}\,/\,\texttt{formIII}\,/\,\texttt{formIV} i metodą
+\texttt{sentence()}. \texttt{MultiSubjectMeasures.degreeOfTruth(\dots)} liczy
+stopień prawdziwości $T$ wg \cite{superson14}, a \texttt{MultiSubjectGenerator}
+generuje kandydatów dla zadanej pary podmiotów.
+
+\paragraph{Pakiet \texttt{data} -- dostęp do bazy.}
+\texttt{CarRecord} (rekord) przechowuje wartości atrybutów jednego pojazdu.
+\texttt{DbImporter} ładuje przefiltrowany plik CSV do bazy SQLite, a
+\texttt{CarDataLoader} czyta rekordy przez JDBC; \texttt{Columns} centralizuje
+nazwy kolumn. \texttt{DataCleaner} to jednorazowe narzędzie selekcji kolumn
+i odrzucenia rekordów z brakami (przygotowanie zbioru roboczego).
+
+\subsection{Wymagania uruchomieniowe}
+Aplikacja wymaga \textbf{JDK/JRE w wersji 25 (Java~25~LTS)} -- zgodnie
+z wymogiem ,,najnowsza wersja LTS'' -- oraz narzędzia \textbf{Apache Maven}
+do zbudowania i pobrania zależności. Baza danych nie wymaga osobnego serwera:
+SQLite jest wbudowaną, plikową bazą relacyjną, a sterownik \texttt{sqlite-jdbc}
+zawiera natywne biblioteki dla głównych systemów (Windows, Linux, macOS).
+Pozostałe zależności (\texttt{jFuzzyLogic} przez JitPack, SLF4J/Logback) są
+pobierane automatycznie przy budowaniu. Uruchomienie części obliczeniowej
+następuje przez \texttt{mvn exec:java} (lub z zbudowanego pakietu); przy
+pierwszym starcie zbiór roboczy jest importowany z pliku CSV do bazy
+\texttt{cars.db}, a kolejne uruchomienia czytają już z bazy.
 
 % =====================================================================
 \section{Jednopodmiotowe podsumowania lingwistyczne. Miary jakości, podsumowanie optymalne}
@@ -791,6 +887,16 @@ ss. 133--154, 2001.
 \bibitem{kaggle-cars} J. Islam,
 \textit{Car Specification Dataset 1945--2020}, Kaggle, 2020.\\
 \url{https://www.kaggle.com/datasets/jahaidulislam/car-specification-dataset-1945-2020}
+
+\bibitem{superson14} A. Niewiadomski, I. Superson,
+,,On multi-subjectivity in linguistic summarization of relational databases'',
+\textit{Journal of Theoretical and Applied Computer Science}, vol. 8, nr 1,
+ss. 15--34, 2014.
+
+\bibitem{jfuzzylogic} P. Cingolani, J. Alcalá-Fdez,
+,,jFuzzyLogic: a Java library to design fuzzy logic controllers according to
+the standard for fuzzy control programming'', \textit{International Journal of
+Computational Intelligence Systems}, vol. 6, sup. 1, ss. 61--75, 2013.
 
 \end{thebibliography}
 

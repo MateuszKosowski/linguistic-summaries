@@ -1,0 +1,175 @@
+@startuml uml_classes
+' Diagram klas pakietu obliczeń rozmytych i generowania podsumowań lingwistycznych.
+' Renderowanie bez Graphviz: układ wbudowany Smetana.
+!pragma layout smetana
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "fuzzy.set" {
+  class Universe {
+    +continuous(min,max): Universe
+    +discrete(min,max): Universe
+    +samplePoints(): double[]
+    +clamp(x): double
+  }
+  class FuzzySet {
+    +membership(x): double
+    +height(): double
+    +support(): Interval
+    +alphaCut(a): Interval
+    +isNormal()/isEmpty()/isConvex(): boolean
+    +complement()/union()/intersect(): FuzzySet
+    +relativeSupportCardinality(): double
+    +relativeSigmaCardinality(): double
+  }
+  class ClassicSet {
+    +membership(x): double
+    +complement()/union()/intersect(): ClassicSet
+  }
+  class Interval <<record>>
+}
+
+package "fuzzy.mf" {
+  interface MembershipFunction <<functional>> {
+    +degree(x): double
+  }
+  class TriangularMf
+  class TrapezoidalMf
+  class GaussianMf
+  class Operations <<utility>> {
+    +complement(mf): MembershipFunction
+    +union(a,b): MembershipFunction
+    +intersection(a,b): MembershipFunction
+  }
+}
+
+package "fuzzy.linguistic" {
+  class LinguisticVariable {
+    +degreeOf(label,x): double
+    +isValid(x): boolean
+  }
+  class Label <<record>> {
+    +degree(x): double
+  }
+  class Quantifier {
+    +degree(quantity): double
+    +isRelative(): boolean
+  }
+}
+
+package "config" {
+  class FuzzyConfig {
+    +defaults(): FuzzyConfig
+    +variables(): List
+    +relativeQuantifiers(): List
+    +absoluteQuantifiers(): List
+  }
+}
+
+package "summary" {
+  interface LabelExpression {
+    +degree(rec): double
+    +text(): String
+    +atoms(): List
+  }
+  class Property
+  class Connective
+  class SingleSubjectSummary {
+    +sentence(): String
+    +hasQualifier(): boolean
+  }
+  class SummaryGenerator {
+    +simpleForm1(abs): List
+    +compoundForm1(kind,a,b): List
+    +simpleForm2(col,label): List
+  }
+}
+
+package "summary.quality" {
+  class QualityMeasures <<utility>> {
+    +evaluate(summary,records,weights): Quality
+  }
+  class Quality <<record>>
+  class QualityWeights {
+    +equal(): QualityWeights
+    +weightedSum(m): double
+  }
+}
+
+package "summary.multi" {
+  class Subject {
+    +ofMake(make): Subject
+    +contains(rec): boolean
+  }
+  class MultiSubjectSummary {
+    +formI/II/III/IV(...): MultiSubjectSummary
+    +sentence(): String
+  }
+  class MultiSubjectMeasures <<utility>> {
+    +degreeOfTruth(summary,records): double
+  }
+  class MultiSubjectGenerator {
+    +formI(p1,p2): List
+    +formIV(p1,p2): List
+  }
+}
+
+package "data" {
+  class CarRecord <<record>> {
+    +value(col): double
+  }
+  class CarDataLoader {
+    +load(): List
+  }
+  class DbImporter {
+    +importCsv(csv,db): int
+  }
+  class Columns <<utility>>
+}
+
+MembershipFunction <|.. TriangularMf
+MembershipFunction <|.. TrapezoidalMf
+MembershipFunction <|.. GaussianMf
+FuzzySet --> Universe
+FuzzySet --> MembershipFunction
+FuzzySet ..> Interval
+ClassicSet --> Universe
+Operations ..> MembershipFunction
+
+Label --> FuzzySet
+LinguisticVariable --> Universe
+LinguisticVariable --> "*" Label
+Quantifier --> FuzzySet
+
+FuzzyConfig --> "*" LinguisticVariable
+FuzzyConfig --> "*" Quantifier
+
+LabelExpression <|.. Property
+LabelExpression <|.. Connective
+Property --> LinguisticVariable
+Property --> Label
+Connective --> "*" LabelExpression
+SingleSubjectSummary --> Quantifier
+SingleSubjectSummary --> LabelExpression
+SummaryGenerator --> FuzzyConfig
+SummaryGenerator ..> SingleSubjectSummary
+
+QualityMeasures ..> SingleSubjectSummary
+QualityMeasures ..> Quality
+QualityMeasures ..> QualityWeights
+
+MultiSubjectSummary --> Quantifier
+MultiSubjectSummary --> "2" Subject
+MultiSubjectSummary --> LabelExpression
+MultiSubjectMeasures ..> MultiSubjectSummary
+MultiSubjectGenerator --> FuzzyConfig
+MultiSubjectGenerator ..> MultiSubjectSummary
+
+LabelExpression ..> CarRecord
+Subject ..> CarRecord
+CarDataLoader ..> CarRecord
+CarDataLoader ..> DbImporter
+DbImporter ..> Columns
+@enduml
