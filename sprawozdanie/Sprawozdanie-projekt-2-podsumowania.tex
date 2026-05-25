@@ -6,6 +6,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[pass]{geometry}
+\usepackage{pdflscape}
 \usepackage{booktabs}
 \usepackage{float}
 \usepackage{array}
@@ -705,12 +707,18 @@ realizuje sterownik \texttt{sqlite-jdbc} (relacyjna baza SQLite przez JDBC),
 a logowanie -- SLF4J/Logback. Całość budowana jest narzędziem Maven; zależności
 pobierane są automatycznie (\texttt{jFuzzyLogic} z repozytorium JitPack).
 
-\begin{figure}[H]
+\newgeometry{margin=1.2cm}
+\begin{landscape}
+\begin{figure}[p]
     \centering
-    \includegraphics[width=\textwidth]{uml_classes.png}
+    \includegraphics[width=\linewidth,height=0.85\textheight,keepaspectratio]{uml_classes.png}
     \caption{Diagram klas UML pakietu obliczeń rozmytych i generowania
-    podsumowań. Pakiety: \texttt{fuzzy.set} (zbiory i przestrzeń rozważań),
-    \texttt{fuzzy.mf} (funkcje przynależności -- delegacja do
+    podsumowań. W każdej klasie wyróżniono sekcję pól (atrybutów) -- nad linią --
+    oraz kluczowych operacji (metod); zagnieżdżone typy wyliczeniowe
+    (np.~\texttt{Universe.Kind}, \texttt{Quantifier.Type},
+    \texttt{MultiSubjectSummary.Form}) pokazano jako odrębne elementy powiązane
+    z~klasą macierzystą. Pakiety: \texttt{fuzzy.set} (zbiory i przestrzeń
+    rozważań), \texttt{fuzzy.mf} (funkcje przynależności -- delegacja do
     \texttt{jFuzzyLogic}), \texttt{fuzzy.linguistic} (zmienna lingwistyczna,
     etykieta, kwantyfikator), \texttt{summary} (sumaryzator/kwalifikator,
     podsumowania jednopodmiotowe), \texttt{summary.quality} (miary $T_1$--$T_{11}$),
@@ -719,9 +727,11 @@ pobierane są automatycznie (\texttt{jFuzzyLogic} z repozytorium JitPack).
     (pole), przerywane -- zależność użycia; trójkąt -- realizację interfejsu.}
     \label{fig:uml}
 \end{figure}
+\end{landscape}
+\restoregeometry
 
 \subsection{Charakterystyka najważniejszych klas}
-Poniżej zwięzły opis klas i ich kluczowych metod (rys.~\ref{fig:uml}).
+Poniżej zwięzły opis klas, ich pól oraz kluczowych metod (rys.~\ref{fig:uml}).
 
 \paragraph{Pakiet \texttt{fuzzy.set} -- zbiory i przestrzeń rozważań.}
 \texttt{Universe} reprezentuje przestrzeń rozważań w dwóch wariantach: gęstym
