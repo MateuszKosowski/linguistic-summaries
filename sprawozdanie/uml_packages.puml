@@ -159,6 +159,9 @@ package "config" {
     +variables(): List
     +relativeQuantifiers(): List
     +absoluteQuantifiers(): List
+    +addLabel(column,name,mf): void
+    +addRelativeQuantifier(name,mf): void
+    +addAbsoluteQuantifier(name,mf): void
   }
 }
 
@@ -280,6 +283,8 @@ package "summary.multi" {
     -config: FuzzyConfig
     --
     +formI(p1,p2): List
+    +formII(p1,p2,s2): List
+    +formIII(p1,p2,s2): List
     +formIV(p1,p2): List
   }
 }
@@ -345,4 +350,56 @@ package "data" {
 CarDataLoader ..> CarRecord
 CarDataLoader ..> DbImporter
 DbImporter ..> Columns
+@enduml
+
+' =====================================================================
+@startuml uml_gui
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "«z innych pakietów»" <<Frame>> {
+  class FuzzyConfig
+  class CarRecord
+  class SummaryGenerator
+  class MultiSubjectGenerator
+  class QualityMeasures
+  class MultiSubjectMeasures
+  interface MembershipFunction
+}
+
+package "app" {
+  class Main {
+    {static}+main(args): void
+    {static}+isGuiMode(args): boolean
+  }
+}
+
+package "app.gui" {
+  class SummaryGui {
+    -config: FuzzyConfig
+    -records: List<CarRecord>
+    -frame: JFrame
+    -singleModel: DefaultTableModel
+    -multiModel: DefaultTableModel
+    --
+    {static}+launch(): void
+    {static}+createMembershipFunction(type,params): MembershipFunction
+    -generateSingleSubject(): void
+    -generateMultiSubject(): void
+    -addAdvancedLabel(): void
+    -addAdvancedQuantifier(): void
+    -exportRows(table,name,selectedOnly): void
+  }
+}
+
+Main ..> SummaryGui
+SummaryGui --> FuzzyConfig
+SummaryGui --> "*" CarRecord
+SummaryGui ..> SummaryGenerator
+SummaryGui ..> MultiSubjectGenerator
+SummaryGui ..> QualityMeasures
+SummaryGui ..> MultiSubjectMeasures
+SummaryGui ..> MembershipFunction
 @enduml

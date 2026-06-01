@@ -602,26 +602,12 @@ pobierane są automatycznie (\texttt{jFuzzyLogic} z repozytorium JitPack).
 
 \subsection{Charakterystyka najważniejszych klas}
 Poniżej zwięzły opis klas, ich pól oraz kluczowych metod. Dla czytelności
-diagram klas rozbito na cztery rysunki odpowiadające grupom pakietów
-(rys.~\ref{fig:uml-fuzzy}--\ref{fig:uml-data}); każdy umieszczono przy opisie
-właściwej grupy. Klasy używane z~innych pakietów pokazano na diagramach jako
-odnośniki (puste boksy) w~ramce ,,z~innych pakietów''.
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.74\linewidth,height=0.25\textheight,keepaspectratio]{uml_fuzzy.png}
-    \caption{Diagram klas pakietów rozmytych: \texttt{fuzzy.set} -- przestrzeń
-    rozważań i zbiory (\texttt{Universe}, \texttt{FuzzySet}, \texttt{ClassicSet},
-    \texttt{Interval}); \texttt{fuzzy.mf} -- funkcje przynależności delegujące do
-    biblioteki \texttt{jFuzzyLogic} (interfejs \texttt{MembershipFunction} oraz
-    \texttt{TriangularMf}, \texttt{TrapezoidalMf}, \texttt{GaussianMf}; klasa
-    narzędziowa \texttt{Operations} -- dopełnienie/suma/iloczyn); \texttt{fuzzy.linguistic}
-    -- warstwa lingwistyczna (\texttt{LinguisticVariable}, \texttt{Label},
-    \texttt{Quantifier} z~typem \texttt{Type}). Nad linią pola (atrybuty), pod
-    linią operacje (metody); trójkąt -- realizacja interfejsu, linia ciągła --
-    złożenie (pole), przerywana -- zależność użycia.}
-    \label{fig:uml-fuzzy}
-\end{figure}
+diagram klas rozbito na rysunki odpowiadające najważniejszym grupom pakietów.
+W raporcie pokazano diagramy dotyczące generowania i oceny podsumowań
+(rys.~\ref{fig:uml-summary}--\ref{fig:uml-multi}), a pomocnicze diagramy
+pakietów rozmytych, dostępu do danych i GUI przeniesiono do załącznika.
+Klasy używane z~innych pakietów pokazano jako odnośniki (puste boksy)
+w~ramce ,,z~innych pakietów''.
 
 \paragraph{Pakiet \texttt{fuzzy.set} -- zbiory i przestrzeń rozważań.}
 \texttt{Universe} reprezentuje przestrzeń rozważań w dwóch wariantach: gęstym
@@ -712,16 +698,6 @@ generuje kandydatów dla zadanej pary podmiotów.
 \texttt{CarDataLoader} czyta rekordy przez JDBC; \texttt{Columns} centralizuje
 nazwy kolumn. \texttt{DataCleaner} to jednorazowe narzędzie selekcji kolumn
 i odrzucenia rekordów z brakami (przygotowanie zbioru roboczego).
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.55\linewidth,height=0.30\textheight,keepaspectratio]{uml_data.png}
-    \caption{Diagram klas pakietu \texttt{data} -- dostęp do bazy: rekord
-    pojazdu (\texttt{CarRecord}), jednorazowy import CSV${\to}$SQLite
-    (\texttt{DbImporter}), odczyt rekordów przez JDBC (\texttt{CarDataLoader})
-    oraz centralny słownik nazw kolumn (klasa narzędziowa \texttt{Columns}).}
-    \label{fig:uml-data}
-\end{figure}
 
 \subsection{Wymagania uruchomieniowe}
 Aplikacja wymaga \textbf{JDK/JRE w wersji 25 (Java~25~LTS)} -- zgodnie
@@ -998,53 +974,132 @@ trafia w~,,prawie żaden''), więc $T_1$ trzeba czytać łącznie z~$T_3$;
 zdania krótkie, więc uczciwe rankingowanie wymaga porównań w~obrębie jednej
 formy albo świadomego doboru wag pod~kątem miar aktywnych w~danym eksperymencie.
 
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień~11 wg
-Harmonogramu Zajęć na WIKAMP KSR.}
-
 % =====================================================================
 \section{Wielopodmiotowe podsumowania lingwistyczne i~ich miary jakości}
-Wyniki kolejnych eksperymentów wg punktów 2.-4. opisu projektu 2. Uzasadnienie i
-metoda podziału zbioru danych na rozłączne podmioty. Listy podsumowań
-wielopodmiotowych i tabele/rankingi podsumowań dla danych atrybutów obowiązkowe i
-dokładnie opisane w ,,captions'' (tytułach), konieczny opis kolumn i wierszy tabel.
-{\bf Wzorów podsumowań ani miar nie należy przepisywać ani cytować, wystarczy podać literaturę, ale
-należy skomentować co oznaczają i jaką informacje niosą wybrane miary w wybranych
-przypadkach.} Konieczne uwzględnienie wszystkich 4-ch form podsumowań wielopodmiotowych.
-\\
 
-** Możliwe sformułowanie zagadnienia wielopodmiotowego podsumowania optymalnego **.\\
-\indent {** Ewentualne wyniki realizacji punktu ,,na ocenę 5.0'' wg opisu Projektu 2. i ich porównanie do wyników z
-części obowiązkowej **.}\\
+Eksperyment wielopodmiotowy wykonano dla rozłącznych podmiotów
+$P_1=\text{BMW}$ i $P_2=\text{Toyota}$, wyznaczonych z atrybutu
+\texttt{Make}. W formach II--III użyto kwalifikatora $S_2$: ,,masa własna
+= ciężki''. Aplikacja wygenerowała 910 kandydatów: 300 dla formy~I, po 275
+dla form II--III (po odrzuceniu tautologii, gdzie $S_1$ dotyczył tej samej
+zmiennej co $S_2$) oraz 60 dla formy~IV. Dla podsumowań wielopodmiotowych
+liczono stopień prawdziwości $T$ wg~\cite{superson14}; literatura nie
+definiuje tu pełnego zestawu miar $T_1$--$T_{11}$.
 
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień 12 wg Harmonogramu Zajęć
-na WIKAMP KSR.}
+Wybór marek BMW i Toyota nie był przypadkowy: obie grupy mają w zbiorze
+wystarczająco dużo rekordów, ale reprezentują inne profile konstrukcyjne.
+Toyota ma dużo modeli miejskich i rodzinnych, natomiast BMW częściej
+występuje w wersjach mocniejszych, cięższych i szybszych. Dzięki temu
+podsumowanie wielopodmiotowe nie jest tylko ćwiczeniem formalnym, lecz
+sprawdza, czy język rozmyty potrafi uchwycić różnicę, którą w danych
+widać po wielu atrybutach naraz.
+
+\begin{table}[H]
+\centering
+\caption{Najlepsze podsumowania wielopodmiotowe (TOP 1 dla każdej formy) dla porównania BMW
+($P_1$) i Toyoty ($P_2$). Kolumna ,,forma'' wskazuje jedną z czterech
+postaci podsumowań wielopodmiotowych, kolumna $T$ -- stopień prawdziwości
+zdania, a ostatnia kolumna podaje zdanie wygenerowane przez aplikację.
+Wiele wartości $T=1{,}000$ oznacza, że dany stosunek stopni spełnienia
+idealnie wpada w nośnik użytego kwantyfikatora; nie należy tego czytać
+jako samodzielnej miary istotności bez interpretacji treści zdania.}
+\label{tab:multi-bmw-toyota}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l r r p{12.5cm}}
+\toprule
+Forma & \# & $T$ & Podsumowanie \\
+\midrule
+I & 1 & 1{,}000 & Prawie żaden aut BMW w porównaniu do Toyota ma: Długość pojazdu = krótki. \\
+\midrule
+II & 1 & 1{,}000 & Prawie wszystkie aut BMW spełniających [Masa własna = ciężki] w porównaniu do aut Toyota spełniających [Masa własna = ciężki] ma: Długość pojazdu = krótki. \\
+\midrule
+III & 1 & 1{,}000 & Prawie żaden aut BMW, które spełniają [Masa własna = ciężki], w porównaniu do Toyota ma: Długość pojazdu = krótki. \\
+\midrule
+IV & 1 & 1{,}000 & Więcej aut BMW niż Toyota ma: Średnica zawracania = ociężały. \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Wyniki wskazują, że BMW w porównaniu z Toyotą częściej trafia w etykiety
+większych i mocniejszych aut. Najczytelniej pokazuje to forma~IV:
+,,średnica zawracania = ociężały''.
+Formy I--III dają bogatsze zdania
+z kwantyfikatorem, lecz wiele remisów $T=1{,}000$, więc wartość $T$ należy
+czytać razem z treścią zdania. Forma~II porównuje ciężkie BMW z ciężkimi
+Toyotami, a forma~III -- ciężkie BMW z całą Toyotą; są to różne pytania
+badawcze, mimo podobnej skali wyniku.
+
+Najważniejsza różnica między formami jest interpretacyjna. Forma~I odpowiada
+na pytanie, jak często obiekty z $P_1$ mają daną własność w porównaniu z
+$P_2$. Forma~II zawęża oba podmioty kwalifikatorem, więc porównuje dwie
+podpopulacje tego samego typu (tu: ciężkie BMW i ciężkie Toyoty). Forma~III
+zawęża tylko pierwszy podmiot, przez co pokazuje ciężkie BMW na tle całej
+Toyoty. Forma~IV jest najprostsza językowo i dlatego najlepiej sprawdza się
+do szybkiej interpretacji, ale traci informację o tym, jaki kwantyfikator
+opisuje skalę różnicy.
+
+W praktyce oznacza to, że w części wielopodmiotowej sam ranking po $T$ jest
+mniej wystarczający niż w części jednopodmiotowej. Stopień prawdziwości
+mówi, czy zdanie pasuje do wybranego kwantyfikatora, ale nie rozstrzyga,
+czy zdanie jest najciekawsze poznawczo. Dlatego w tabeli pokazano po jednym
+najlepszym przykładzie każdej formy, a interpretację oparto na treści
+zdań i porównaniu ich znaczenia.
 
 
 % =====================================================================
 \section{Dyskusja, wnioski}
-We wnioskach z badania skomentować wyłącznie wpływ wybranych parametrów (zbiorów rozmytych, zmiennych lingwistycznych, miar podobieństwa, itp.) na jakość procesu klasyfikacji. Innymi słowy – wnioski to to, co wynika z przeprowadzonych obliczeń, a nie to co wiadomo z literatury. \\
-Komentować należy wyłącznie zbiór danych i zanczenie otrzymanych podsumowań. Metody nie komentujemy. \\
-Dokładne interpretacje uzyskanych wyników w zależności od parametrów
-opisanych w punktach 3.-4 opisu Projektu 2.
-Omówić i wyjaśnić napotkane problemy (jeśli były). Każdy wniosek/problem powinien mieć poparcie
-w przeprowadzonych eksperymentach (odwołania do konkretnych wyników: podsumowań i miar
-jakości). Ocena które podsumowania i dlaczego niosą najistotniejsze informacje
-i które ich miary jakości mają małe albo duże znaczenie dla wiarygodności i jakości otrzymanych
-agregacji/podsumowań.  \\
-\underline{Dla końcowej oceny jest to najważniejsza sekcja} sprawozdania, gdyż prezentuje poziom
-zrozumienia rozwiązywanego problemu.\\
 
-** Możliwości kontynuacji prac w obszarze logiki rozmytej i wnioskowania rozmytego, zwłaszcza w kontekście pracy inżynierskiej,
-magisterskiej, naukowej, itp. **\\
+Z przeprowadzonych obliczeń wynikają następujące wnioski.
 
-\noindent {\bf Sekcja uzupełniona jako efekt zadań Tydzień 11 i Tydzień 12 wg
-Harmonogramu Zajęć na WIKAMP KSR.}
+\begin{itemize}
+    \item \textbf{Sama prawdziwość nie wystarcza do oceny przydatności
+    podsumowania.} Zdania typu ,,prawie żaden obiekt ma rzadką cechę'' często
+    osiągają $T_1=1{,}000$, bo faktycznie mało rekordów spełnia warunek.
+    Nauczyło nas to, że $T_1$ trzeba czytać razem z pokryciem $T_3$ i treścią
+    kwantyfikatora. Prawdziwość mówi, czy zdanie pasuje do danych; nie mówi
+    jeszcze, czy zdanie jest poznawczo ciekawe.
 
+    \item \textbf{Najwięcej o całej bazie mówiły etykiety środkowe i dobrze
+    pokrywające rozkład.} W rankingach jednopodmiotowych wysoko powtarzały
+    się cechy takie jak standardowa długość, standardowy rozstaw osi,
+    przeciętna średnica zawracania czy małolitrażowa pojemność skokowa.
+    Oznacza to, że zbiór roboczy jest zdominowany przez typowe samochody
+    osobowe, a nie przez skrajne konstrukcje. To nie jest założenie o rynku,
+    tylko informacja uzyskana z policzonych pokryć i prawdziwości zdań.
 
-% =====================================================================
-\section{Braki w realizacji projektu 2.}
-Wymienić wg opisu Projektu 2. wszystkie niezrealizowane obowiązkowe elementy projektu, ewentualnie
-podać merytoryczne (ale nie czasowe) przyczyny tych braków.
+    \item \textbf{Kwalifikator zmienia pytanie badawcze, a nie tylko zawęża
+    tabelę wyników.} Po ustawieniu kwalifikatora ,,masa własna = ciężki''
+    pojawiły się zdania, które opisują nie całą bazę, lecz profil aut ciężkich.
+    Szczególnie pouczające jest podsumowanie o prawie braku ciężkich aut
+    małolitrażowych: niskie pokrycie $T_3=0{,}067$ nie jest tu wadą, lecz
+    właściwą treścią wniosku. Dowiedzieliśmy się, że dla pewnych pytań
+    badawczych małe pokrycie może być równie informacyjne jak duże.
+
+    \item \textbf{Miary strukturalne trzeba traktować jako preferencję formy,
+    a nie jako bezpośredni opis danych.} $T_2$, $T_6$, $T_7$ i $T_8$ zależą
+    głównie od szerokości nośników i kardynalności zbiorów rozmytych.
+    Pomagają karać pojęcia zbyt szerokie lub zbyt mało specyficzne, ale nie
+    zastępują interpretacji pokrycia i prawdziwości. Widać to szczególnie
+    przy porównaniu formy I i II: wzrost wartości optymalnej w formie II
+    częściowo wynika z aktywacji miar kwalifikatora $T_9$--$T_{11}$.
+
+    \item \textbf{W części wielopodmiotowej nauczyliśmy się, że jedna liczba
+    $T$ nie porządkuje całej wiedzy o porównaniu marek.} BMW i Toyota różnią
+    się przede wszystkim w etykietach związanych z gabarytami i osiągami:
+    BMW częściej wpada w opisy aut cięższych, szybszych i mniej zwrotnych.
+    Jednak wiele zdań ma $T=1{,}000$, więc ranking wymaga komentarza
+    językowego. Forma IV jest najłatwiejsza do szybkiej interpretacji, ale
+    formy I--III pozwalają odróżnić pytania o całą markę, ciężkie egzemplarze
+    obu marek oraz ciężkie BMW na tle całej Toyoty.
+
+    \item \textbf{Najbardziej wiarygodne porównania powstają wewnątrz jednej
+    formy i przy ustalonych wagach.} Porównywanie wartości optymalnej między
+    różnymi formami może prowadzić do fałszywych wniosków, bo różne formy
+    aktywują inne miary albo opisują inne populacje. Z tego powodu GUI
+    pozwala zmieniać wagi i sortowanie, ale interpretacja końcowa musi
+    uwzględniać, jakie pytanie zadaje dana forma podsumowania.
+\end{itemize}
 
 
 % =====================================================================

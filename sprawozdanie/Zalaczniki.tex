@@ -21,9 +21,10 @@ dr inż. Marcin Kacprowicz
 \maketitle
 
 \noindent Niniejszy dokument zawiera załączniki do sprawozdania głównego:
-zestawienie miar jakości ($T_1$--$T_{11}$) oraz wykresy funkcji przynależności
-zmiennych lingwistycznych i~kwantyfikatorów. Zgodnie z~regulaminem załączniki
-nie wliczają się do limitu 20 stron sprawozdania.
+zestawienie miar jakości ($T_1$--$T_{11}$), pomocnicze diagramy UML oraz
+wykresy funkcji przynależności zmiennych lingwistycznych i~kwantyfikatorów.
+Zgodnie z~regulaminem załączniki nie wliczają się do limitu 20 stron
+sprawozdania.
 
 \appendix
 \section{Miary jakości podsumowań -- zestawienie}
@@ -37,7 +38,7 @@ w~eksperymentach (\S4 sprawozdania głównego) wraz z~ich skrótowym znaczeniem
 Miary $T_9$--$T_{11}$ dotyczą wyłącznie kwalifikatora, więc dla formy~I
 (bez kwalifikatora) są tożsamościowo równe~$0$.}
 \label{tab:measures}
-\begin{tabular}{l l}
+\begin{tabular}{l p{0.78\textwidth}}
 \toprule
 Miara & Znaczenie (czego dotyczy, kiedy wysoka) \\
 \midrule
@@ -55,6 +56,37 @@ $T_{11}$ & długość (zwięzłość) kwalifikatora \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\section{Pomocnicze diagramy UML}
+\label{app:uml}
+
+Poniższe diagramy uzupełniają opis architektury z~\S3 sprawozdania głównego.
+Do raportu głównego przeniesiono tylko diagramy bezpośrednio związane
+z generowaniem podsumowań, natomiast tutaj pozostawiono warstwę rozmytą,
+dostęp do danych oraz interfejs graficzny.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{uml_fuzzy.png}
+\caption{Diagram klas pakietów rozmytych: \texttt{fuzzy.set},
+\texttt{fuzzy.mf} i~\texttt{fuzzy.linguistic}.}
+\label{fig:app-uml-fuzzy}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{uml_data.png}
+\caption{Diagram klas warstwy danych: import, czyszczenie i odczyt rekordów
+samochodów z bazy SQLite.}
+\label{fig:app-uml-data}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{uml_gui.png}
+\caption{Diagram klasy interfejsu graficznego aplikacji.}
+\label{fig:app-uml-gui}
+\end{figure}
 
 \section{Wykresy funkcji przynależności zmiennych lingwistycznych i~kwantyfikatorów}
 \label{app:plots}
