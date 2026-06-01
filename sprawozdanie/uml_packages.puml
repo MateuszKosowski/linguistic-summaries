@@ -1,0 +1,348 @@
+' Diagramy klas rozbite na pakiety (pionowe, mieszczące się w normalnych marginesach).
+' Klasy z innych pakietów pokazano jako odnośniki (puste boksy) w grupie
+' "«z innych pakietów»", by zachować strzałki zależności bez duplikowania definicji.
+' Render (Graphviz/dot zalecany):
+'   java -DPLANTUML_LIMIT_SIZE=16384 -jar plantuml.jar -tpng -o plots uml_packages.puml
+
+' =====================================================================
+@startuml uml_fuzzy
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "fuzzy.set" {
+  enum "Universe.Kind" as UniverseKind {
+    DISCRETE
+    CONTINUOUS
+  }
+  class Universe {
+    -min: double
+    -max: double
+    -kind: Kind
+    -sampleCount: int
+    -cachedSamples: double[]
+    {static}-DEFAULT_SAMPLES: int
+    {static}-MAX_DISCRETE_SAMPLES: int
+    --
+    +continuous(min,max): Universe
+    +discrete(min,max): Universe
+    +samplePoints(): double[]
+    +clamp(x): double
+  }
+  class FuzzySet {
+    -name: String
+    -universe: Universe
+    -mf: MembershipFunction
+    {static}-EPS: double
+    --
+    +membership(x): double
+    +height(): double
+    +support(): Interval
+    +alphaCut(a): Interval
+    +isNormal()/isEmpty()/isConvex(): boolean
+    +complement()/union()/intersect(): FuzzySet
+    +relativeSupportCardinality(): double
+    +relativeSigmaCardinality(): double
+  }
+  class ClassicSet {
+    -name: String
+    -universe: Universe
+    -predicate: DoublePredicate
+    --
+    +membership(x): double
+    +complement()/union()/intersect(): ClassicSet
+  }
+  class Interval <<record>> {
+    +lo: double
+    +hi: double
+    +empty: boolean
+  }
+}
+
+package "fuzzy.mf" {
+  interface MembershipFunction <<functional>> {
+    +degree(x): double
+  }
+  class TriangularMf {
+    -a: double
+    -b: double
+    -c: double
+    -delegate: MembershipFunctionTriangular
+  }
+  class TrapezoidalMf {
+    -a: double
+    -b: double
+    -c: double
+    -d: double
+    -delegate: MembershipFunctionTrapetzoidal
+  }
+  class GaussianMf {
+    -mean: double
+    -sigma: double
+    -delegate: MembershipFunctionGaussian
+  }
+  class Operations <<utility>> {
+    +complement(mf): MembershipFunction
+    +union(a,b): MembershipFunction
+    +intersection(a,b): MembershipFunction
+  }
+}
+
+package "fuzzy.linguistic" {
+  enum "Quantifier.Type" as QuantifierType {
+    RELATIVE
+    ABSOLUTE
+  }
+  class LinguisticVariable {
+    -name: String
+    -column: String
+    -universe: Universe
+    -labels: List<Label>
+    --
+    +degreeOf(label,x): double
+    +isValid(x): boolean
+  }
+  class Label <<record>> {
+    +name: String
+    +set: FuzzySet
+    --
+    +degree(x): double
+  }
+  class Quantifier {
+    -name: String
+    -type: Type
+    -set: FuzzySet
+    --
+    +degree(quantity): double
+    +isRelative(): boolean
+  }
+}
+
+Universe +-- UniverseKind
+Quantifier +-- QuantifierType
+MembershipFunction <|.. TriangularMf
+MembershipFunction <|.. TrapezoidalMf
+MembershipFunction <|.. GaussianMf
+FuzzySet --> Universe
+FuzzySet --> MembershipFunction
+FuzzySet ..> Interval
+ClassicSet --> Universe
+Operations ..> MembershipFunction
+Label --> FuzzySet
+LinguisticVariable --> Universe
+LinguisticVariable --> "*" Label
+Quantifier --> FuzzySet
+@enduml
+
+' =====================================================================
+@startuml uml_summary
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "«z innych pakietów»" <<Frame>> {
+  class LinguisticVariable
+  class Label
+  class Quantifier
+  class CarRecord
+}
+
+package "config" {
+  class FuzzyConfig {
+    -variables: Map<String,LinguisticVariable>
+    -relativeQuantifiers: List<Quantifier>
+    -absoluteQuantifiers: List<Quantifier>
+    --
+    +defaults(): FuzzyConfig
+    +variables(): List
+    +relativeQuantifiers(): List
+    +absoluteQuantifiers(): List
+  }
+}
+
+package "summary" {
+  interface LabelExpression {
+    +degree(rec): double
+    +text(): String
+    +atoms(): List
+  }
+  class Property {
+    -variable: LinguisticVariable
+    -label: Label
+  }
+  enum "Connective.Kind" as ConnectiveKind {
+    AND
+    OR
+  }
+  class Connective {
+    -kind: Kind
+    -parts: List<LabelExpression>
+  }
+  class SingleSubjectSummary {
+    -quantifier: Quantifier
+    -qualifier: LabelExpression
+    -summarizer: LabelExpression
+    --
+    +sentence(): String
+    +hasQualifier(): boolean
+  }
+  class SummaryGenerator {
+    -config: FuzzyConfig
+    --
+    +simpleForm1(abs): List
+    +compoundForm1(kind,a,b): List
+    +simpleForm2(col,label): List
+  }
+}
+
+package "summary.quality" {
+  class QualityMeasures <<utility>> {
+    +evaluate(summary,records,weights): Quality
+  }
+  class Quality <<record>> {
+    +t1..t11: double
+    +optimal: double
+    {static}+NAMES: String[]
+    --
+    +toArray(): double[]
+  }
+  class QualityWeights {
+    -weights: double[]
+    --
+    +equal(): QualityWeights
+    +weightedSum(m): double
+  }
+}
+
+Connective +-- ConnectiveKind
+LabelExpression <|.. Property
+LabelExpression <|.. Connective
+Property --> LinguisticVariable
+Property --> Label
+Connective --> "*" LabelExpression
+SingleSubjectSummary --> Quantifier
+SingleSubjectSummary --> LabelExpression
+SummaryGenerator --> FuzzyConfig
+SummaryGenerator ..> SingleSubjectSummary
+FuzzyConfig --> "*" LinguisticVariable
+FuzzyConfig --> "*" Quantifier
+QualityMeasures ..> SingleSubjectSummary
+QualityMeasures ..> Quality
+QualityMeasures ..> QualityWeights
+LabelExpression ..> CarRecord
+@enduml
+
+' =====================================================================
+@startuml uml_multi
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "«z innych pakietów»" <<Frame>> {
+  class Quantifier
+  interface LabelExpression
+  class FuzzyConfig
+  class CarRecord
+}
+
+package "summary.multi" {
+  enum "MultiSubjectSummary.Form" as MultiSubjectForm {
+    I
+    II
+    III
+    IV
+  }
+  class Subject {
+    -name: String
+    -predicate: Predicate<CarRecord>
+    --
+    +ofMake(make): Subject
+    +contains(rec): boolean
+  }
+  class MultiSubjectSummary {
+    -form: Form
+    -quantifier: Quantifier
+    -p1: Subject
+    -p2: Subject
+    -summarizer: LabelExpression
+    -qualifier: LabelExpression
+    --
+    +formI/II/III/IV(...): MultiSubjectSummary
+    +sentence(): String
+  }
+  class MultiSubjectMeasures <<utility>> {
+    +degreeOfTruth(summary,records): double
+  }
+  class MultiSubjectGenerator {
+    -config: FuzzyConfig
+    --
+    +formI(p1,p2): List
+    +formIV(p1,p2): List
+  }
+}
+
+MultiSubjectSummary +-- MultiSubjectForm
+MultiSubjectSummary --> Quantifier
+MultiSubjectSummary --> "2" Subject
+MultiSubjectSummary --> LabelExpression
+MultiSubjectMeasures ..> MultiSubjectSummary
+MultiSubjectGenerator --> FuzzyConfig
+MultiSubjectGenerator ..> MultiSubjectSummary
+Subject ..> CarRecord
+@enduml
+
+' =====================================================================
+@startuml uml_data
+skinparam dpi 150
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+hide empty members
+
+package "data" {
+  class CarRecord <<record>> {
+    +idTrim: String
+    +make: String
+    +model: String
+    +attributes: Map<String,Double>
+    --
+    +value(col): double
+  }
+  class CarDataLoader {
+    -jdbcUrl: String
+    --
+    +load(): List
+  }
+  class DbImporter {
+    {static}+DEFAULT_CSV: String
+    {static}+DEFAULT_DB: String
+    --
+    +importCsv(csv,db): int
+  }
+  class Columns <<utility>> {
+    {static}+ID_TRIM: String
+    {static}+MAKE: String
+    {static}+MODEL: String
+    {static}+LENGTH: String
+    {static}+WHEELBASE: String
+    {static}+CURB_WEIGHT: String
+    {static}+TRUNK: String
+    {static}+TORQUE: String
+    {static}+CAPACITY: String
+    {static}+ENGINE_HP: String
+    {static}+TURNING_CIRCLE: String
+    {static}+FUEL_CONSUMPTION: String
+    {static}+FUEL_TANK: String
+    {static}+ACCELERATION: String
+    {static}+MAX_SPEED: String
+    {static}+NUMERIC: List<String>
+    {static}+ALL: List<String>
+  }
+}
+
+CarDataLoader ..> CarRecord
+CarDataLoader ..> DbImporter
+DbImporter ..> Columns
+@enduml

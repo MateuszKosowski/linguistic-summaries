@@ -52,3 +52,6 @@ cars.db
 *.toc
 *.fls
 *.fdb_latexmk
+
+### External tools (PlantUML jar etc.) ###
+tools/

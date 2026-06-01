@@ -63,6 +63,7 @@ public final class Main {
                 .sorted(Comparator.comparingDouble((Scored x) -> x.q.optimal()).reversed())
                 .toList();
         printRanking("\nFORMA 1 — kwantyfikatory bezwzględne (TOP 10)", abs, 10);
+        printDetailTable(abs, 10);
 
         // --- Sumaryzator złożony (AND) — przykłady ---
         printCompoundExamples(config, records, weights);
@@ -74,6 +75,7 @@ public final class Main {
                 .toList();
         printRanking("\nPODSUMOWANIA JEDNOPODMIOTOWE — FORMA 2 (kwalifikator: masa = ciężki) (TOP 15)",
                 form2, 15);
+        printDetailTable(form2, 10);
 
         // --- Podsumowania WIELOPODMIOTOWE: BMW vs Toyota (formy I i IV) ---
         printMultiSubject(config, records, "BMW", "Toyota");
@@ -118,6 +120,7 @@ public final class Main {
                 .filter(x -> x.name().equals("większość")).findFirst().orElseThrow();
 
         System.out.println("\nSUMARYZATOR ZŁOŻONY (AND / OR) — przykłady:");
+        List<Scored> compound = new java.util.ArrayList<>();
         for (LabelExpression expr : List.of(
                 Connective.and(powerful, thirsty),
                 Connective.or(fast, powerful),
@@ -125,7 +128,9 @@ public final class Main {
             SingleSubjectSummary s = new SingleSubjectSummary(q, expr);
             Quality quality = QualityMeasures.evaluate(s, records, weights);
             System.out.printf("  T1=%.3f  opt=%.3f  | %s%n", quality.t1(), quality.optimal(), s.sentence());
+            compound.add(new Scored(s, quality));
         }
+        printDetailTable(compound, compound.size());
     }
 
     private static void printRanking(String title, List<Scored> scored, int limit) {
