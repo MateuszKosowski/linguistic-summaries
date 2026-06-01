@@ -61,8 +61,8 @@ public final class MultiSubjectSummary {
             case I -> capitalize(quantifier.name()) + " aut " + p1.name()
                     + " w porównaniu do " + p2.name() + " ma: " + s1 + ".";
             case II -> capitalize(quantifier.name()) + " aut " + p1.name()
-                    + " w porównaniu do " + p2.name() + ", które spełniają [" + qualifier.text()
-                    + "], ma: " + s1 + ".";
+                    + " spełniających [" + qualifier.text() + "] w porównaniu do aut " + p2.name()
+                    + " spełniających [" + qualifier.text() + "] ma: " + s1 + ".";
             case III -> capitalize(quantifier.name()) + " aut " + p1.name()
                     + ", które spełniają [" + qualifier.text() + "], w porównaniu do " + p2.name()
                     + " ma: " + s1 + ".";

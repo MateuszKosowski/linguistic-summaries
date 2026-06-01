@@ -47,4 +47,43 @@ public final class MultiSubjectGenerator {
         }
         return out;
     }
+
+    /** Forma II: kwalifikator S₂ zawęża oba podmioty; każda etykieta sumaryzatora × kwantyfikatory względne. */
+    public List<MultiSubjectSummary> formII(Subject p1, Subject p2, LabelExpression s2) {
+        List<MultiSubjectSummary> out = new ArrayList<>();
+        for (LinguisticVariable var : config.variables()) {
+            if (isSameVariableAsSimpleQualifier(s2, var)) {
+                continue;
+            }
+            for (Label label : var.labels()) {
+                LabelExpression s1 = new Property(var, label);
+                for (Quantifier q : config.relativeQuantifiers()) {
+                    out.add(MultiSubjectSummary.formII(q, p1, p2, s2, s1));
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Forma III: kwalifikator S₂ zawęża tylko P₁; każda etykieta sumaryzatora × kwantyfikatory względne. */
+    public List<MultiSubjectSummary> formIII(Subject p1, Subject p2, LabelExpression s2) {
+        List<MultiSubjectSummary> out = new ArrayList<>();
+        for (LinguisticVariable var : config.variables()) {
+            if (isSameVariableAsSimpleQualifier(s2, var)) {
+                continue;
+            }
+            for (Label label : var.labels()) {
+                LabelExpression s1 = new Property(var, label);
+                for (Quantifier q : config.relativeQuantifiers()) {
+                    out.add(MultiSubjectSummary.formIII(q, p1, p2, s2, s1));
+                }
+            }
+        }
+        return out;
+    }
+
+    private static boolean isSameVariableAsSimpleQualifier(LabelExpression qualifier, LinguisticVariable var) {
+        return qualifier instanceof Property property
+                && property.variable().column().equals(var.column());
+    }
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 
+import org.kosowskinowak.app.gui.SummaryGui;
 import org.kosowskinowak.config.FuzzyConfig;
 import org.kosowskinowak.data.CarDataLoader;
 import org.kosowskinowak.data.CarRecord;
@@ -32,6 +33,11 @@ public final class Main {
     private static final int TOP = 20;
 
     public static void main(String[] args) {
+        if (isGuiMode(args)) {
+            SummaryGui.launch();
+            return;
+        }
+
         String dbPath = DbImporter.DEFAULT_DB;
         if (!new File(dbPath).exists()) {
             System.out.println("Baza " + dbPath + " nie istnieje — importuję z CSV...");
@@ -77,8 +83,17 @@ public final class Main {
                 form2, 15);
         printDetailTable(form2, 10);
 
-        // --- Podsumowania WIELOPODMIOTOWE: BMW vs Toyota (formy I i IV) ---
+        // --- Podsumowania WIELOPODMIOTOWE: BMW vs Toyota (formy I–IV) ---
         printMultiSubject(config, records, "BMW", "Toyota");
+    }
+
+    static boolean isGuiMode(String[] args) {
+        for (String arg : args) {
+            if ("--gui".equalsIgnoreCase(arg)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void printMultiSubject(FuzzyConfig config, List<CarRecord> records,
@@ -87,20 +102,38 @@ public final class Main {
         Subject p2 = Subject.ofMake(makeB);
         MultiSubjectGenerator gen = new MultiSubjectGenerator(config);
 
+        LabelExpression qual = new Property(config.variable(Columns.CURB_WEIGHT),
+                config.variable(Columns.CURB_WEIGHT).label("ciężki").orElseThrow());
+
         List<MultiSubjectSummary> candidates = new java.util.ArrayList<>(gen.formIV(p1, p2));
         candidates.addAll(gen.formI(p1, p2));
+        candidates.addAll(gen.formII(p1, p2, qual));
+        candidates.addAll(gen.formIII(p1, p2, qual));
         List<MultiScored> scored = candidates.stream()
                 .map(s -> new MultiScored(s, MultiSubjectMeasures.degreeOfTruth(s, records)))
                 .sorted(Comparator.comparingDouble((MultiScored x) -> x.t).reversed())
                 .toList();
 
-        System.out.printf("%n=== PODSUMOWANIA WIELOPODMIOTOWE — %s vs %s (formy I, IV) ===%n", makeA, makeB);
+        System.out.printf("%n=== PODSUMOWANIA WIELOPODMIOTOWE — %s vs %s (formy I, II, III, IV) ===%n", makeA, makeB);
         System.out.println("Ranking wg stopnia prawdziwości T (Niewiadomski, Superson 2014). "
                 + scored.size() + " kandydatów.");
         int n = Math.min(20, scored.size());
         for (int i = 0; i < n; i++) {
             MultiScored s = scored.get(i);
-            System.out.printf("%2d. T=%.3f  | %s%n", i + 1, s.t, s.s.sentence());
+            System.out.printf("%2d. forma=%s  T=%.3f  | %s%n", i + 1, s.s.form(), s.t, s.s.sentence());
+        }
+
+        System.out.println("\n--- Najlepsze podsumowania wg formy ---");
+        for (MultiSubjectSummary.Form form : MultiSubjectSummary.Form.values()) {
+            List<MultiScored> byForm = scored.stream()
+                    .filter(s -> s.s.form() == form)
+                    .limit(3)
+                    .toList();
+            System.out.println("Forma " + form + ":");
+            for (int i = 0; i < byForm.size(); i++) {
+                MultiScored s = byForm.get(i);
+                System.out.printf("  %d. T=%.3f  | %s%n", i + 1, s.t, s.s.sentence());
+            }
         }
     }
 

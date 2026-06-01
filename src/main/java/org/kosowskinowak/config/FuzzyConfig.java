@@ -9,6 +9,7 @@ import org.kosowskinowak.data.Columns;
 import org.kosowskinowak.fuzzy.linguistic.Label;
 import org.kosowskinowak.fuzzy.linguistic.LinguisticVariable;
 import org.kosowskinowak.fuzzy.linguistic.Quantifier;
+import org.kosowskinowak.fuzzy.mf.MembershipFunction;
 import org.kosowskinowak.fuzzy.mf.TrapezoidalMf;
 import org.kosowskinowak.fuzzy.set.FuzzySet;
 import org.kosowskinowak.fuzzy.set.Universe;
@@ -179,5 +180,32 @@ public final class FuzzyConfig {
 
     public List<Quantifier> absoluteQuantifiers() {
         return List.copyOf(absoluteQuantifiers);
+    }
+
+    public void addLabel(String column, String labelName, MembershipFunction mf) {
+        LinguisticVariable current = variable(column);
+        if (current.label(labelName).isPresent()) {
+            throw new IllegalArgumentException("Etykieta już istnieje: " + labelName);
+        }
+        List<Label> labels = new ArrayList<>(current.labels());
+        labels.add(new Label(labelName, new FuzzySet(labelName, current.universe(), mf)));
+        variables.put(column, new LinguisticVariable(
+                current.name(), current.column(), current.universe(), labels));
+    }
+
+    public void addRelativeQuantifier(String name, MembershipFunction mf) {
+        addQuantifier(relativeQuantifiers, name, Quantifier.Type.RELATIVE, Universe.continuous(0.0, 1.0), mf);
+    }
+
+    public void addAbsoluteQuantifier(String name, MembershipFunction mf) {
+        addQuantifier(absoluteQuantifiers, name, Quantifier.Type.ABSOLUTE, Universe.discrete(0.0, 25000.0), mf);
+    }
+
+    private static void addQuantifier(List<Quantifier> target, String name, Quantifier.Type type,
+                                      Universe universe, MembershipFunction mf) {
+        if (target.stream().anyMatch(q -> q.name().equals(name))) {
+            throw new IllegalArgumentException("Kwantyfikator już istnieje: " + name);
+        }
+        target.add(new Quantifier(name, type, new FuzzySet(name, universe, mf)));
     }
 }
