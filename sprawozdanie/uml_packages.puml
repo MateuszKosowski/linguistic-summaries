@@ -326,6 +326,10 @@ package "data" {
     --
     +importCsv(csv,db): int
   }
+  class DataCleaner {
+    {static}+main(args): void
+    +cleanData(): void
+  }
   class Columns <<utility>> {
     {static}+ID_TRIM: String
     {static}+MAKE: String
@@ -349,6 +353,9 @@ package "data" {
 
 CarDataLoader ..> CarRecord
 CarDataLoader ..> DbImporter
+DataCleaner ..> DbImporter
+DataCleaner ..> CarDataLoader
+DataCleaner ..> Columns
 DbImporter ..> Columns
 @enduml
 

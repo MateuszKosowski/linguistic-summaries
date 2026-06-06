@@ -25,6 +25,7 @@ public final class MultiSubjectGenerator {
 
     /** Forma IV: {@code Więcej P₁ niż P₂ ma S₁} dla każdej etykiety sumaryzatora. */
     public List<MultiSubjectSummary> formIV(Subject p1, Subject p2) {
+        requireDistinctSubjects(p1, p2);
         List<MultiSubjectSummary> out = new ArrayList<>();
         for (LinguisticVariable var : config.variables()) {
             for (Label label : var.labels()) {
@@ -36,6 +37,7 @@ public final class MultiSubjectGenerator {
 
     /** Forma I: każda etykieta sumaryzatora × kwantyfikatory względne. */
     public List<MultiSubjectSummary> formI(Subject p1, Subject p2) {
+        requireDistinctSubjects(p1, p2);
         List<MultiSubjectSummary> out = new ArrayList<>();
         for (LinguisticVariable var : config.variables()) {
             for (Label label : var.labels()) {
@@ -50,6 +52,7 @@ public final class MultiSubjectGenerator {
 
     /** Forma II: kwalifikator S₂ zawęża oba podmioty; każda etykieta sumaryzatora × kwantyfikatory względne. */
     public List<MultiSubjectSummary> formII(Subject p1, Subject p2, LabelExpression s2) {
+        requireDistinctSubjects(p1, p2);
         List<MultiSubjectSummary> out = new ArrayList<>();
         for (LinguisticVariable var : config.variables()) {
             if (isSameVariableAsSimpleQualifier(s2, var)) {
@@ -67,6 +70,7 @@ public final class MultiSubjectGenerator {
 
     /** Forma III: kwalifikator S₂ zawęża tylko P₁; każda etykieta sumaryzatora × kwantyfikatory względne. */
     public List<MultiSubjectSummary> formIII(Subject p1, Subject p2, LabelExpression s2) {
+        requireDistinctSubjects(p1, p2);
         List<MultiSubjectSummary> out = new ArrayList<>();
         for (LinguisticVariable var : config.variables()) {
             if (isSameVariableAsSimpleQualifier(s2, var)) {
@@ -85,5 +89,11 @@ public final class MultiSubjectGenerator {
     private static boolean isSameVariableAsSimpleQualifier(LabelExpression qualifier, LinguisticVariable var) {
         return qualifier instanceof Property property
                 && property.variable().column().equals(var.column());
+    }
+
+    private static void requireDistinctSubjects(Subject p1, Subject p2) {
+        if (p1.sameAs(p2)) {
+            throw new IllegalArgumentException("Podmioty P1 i P2 muszą być różne");
+        }
     }
 }

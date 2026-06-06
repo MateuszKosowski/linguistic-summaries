@@ -32,4 +32,8 @@ public final class Subject {
     public String name() {
         return name;
     }
+
+    public boolean sameAs(Subject other) {
+        return name.equals(other.name);
+    }
 }

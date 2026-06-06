@@ -2,6 +2,7 @@ package org.kosowskinowak.summary.multi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -25,6 +26,10 @@ final class MultiSubjectMeasuresTest {
             "większość",
             Quantifier.Type.RELATIVE,
             new FuzzySet("identity", Universe.continuous(0.0, 1.0), x -> x));
+    private static final Quantifier ALMOST_ALL = new Quantifier(
+            "prawie wszystkie",
+            Quantifier.Type.RELATIVE,
+            new FuzzySet("almost-all", Universe.continuous(0.0, 1.0), x -> x));
 
     @Test
     void formIIAppliesQualifierToP1AndP2() {
@@ -68,8 +73,67 @@ final class MultiSubjectMeasuresTest {
                 .sentence();
 
         assertTrue(sentence.contains("BMW spełniających [masa = ciężki]"));
-        assertTrue(sentence.contains("w porównaniu do aut Toyota spełniających [masa = ciężki]"));
+        assertTrue(sentence.contains("w porównaniu do samochodów Toyota spełniających [masa = ciężki]"));
         assertFalse(sentence.contains("Toyota, które spełniają"));
+    }
+
+    @Test
+    void formISentenceUsesReadablePluralForCars() {
+        LabelExpression summarizer = fake("moc = dynamiczny", record -> 1.0);
+
+        String sentence = MultiSubjectSummary
+                .formI(IDENTITY, BMW, TOYOTA, summarizer)
+                .sentence();
+
+        assertEquals("Większość samochodów BMW w porównaniu do Toyota ma: moc = dynamiczny.",
+                sentence);
+    }
+
+    @Test
+    void formISentenceDeclinesAlmostAllQuantifier() {
+        LabelExpression summarizer = fake("moc = dynamiczny", record -> 1.0);
+
+        String sentence = MultiSubjectSummary
+                .formI(ALMOST_ALL, BMW, TOYOTA, summarizer)
+                .sentence();
+
+        assertEquals("Prawie wszystkie samochody BMW w porównaniu do Toyota mają: moc = dynamiczny.",
+                sentence);
+    }
+
+    @Test
+    void formIISentenceDeclinesQualifiedAlmostAllQuantifier() {
+        LabelExpression summarizer = fake("moc = dynamiczny", record -> 1.0);
+        LabelExpression qualifier = fake("masa = ciężki", record -> 1.0);
+
+        String sentence = MultiSubjectSummary
+                .formII(ALMOST_ALL, BMW, TOYOTA, qualifier, summarizer)
+                .sentence();
+
+        assertTrue(sentence.contains("Prawie wszystkie samochody BMW spełniające [masa = ciężki]"));
+        assertTrue(sentence.contains("mają: moc = dynamiczny."));
+    }
+
+    @Test
+    void formIIISentenceDeclinesQualifiedAlmostNoneQuantifier() {
+        LabelExpression summarizer = fake("moc = dynamiczny", record -> 1.0);
+        LabelExpression qualifier = fake("masa = ciężki", record -> 1.0);
+
+        String sentence = MultiSubjectSummary
+                .formIII(new Quantifier("prawie żaden", Quantifier.Type.RELATIVE,
+                                new FuzzySet("almost-none", Universe.continuous(0.0, 1.0), x -> x)),
+                        BMW, TOYOTA, qualifier, summarizer)
+                .sentence();
+
+        assertTrue(sentence.contains("Prawie żaden samochód BMW, który spełnia [masa = ciężki]"));
+    }
+
+    @Test
+    void rejectsSameSubjectComparison() {
+        MultiSubjectGenerator generator = new MultiSubjectGenerator(FuzzyConfig.defaults());
+
+        assertThrows(IllegalArgumentException.class, () -> generator.formI(BMW, BMW));
+        assertThrows(IllegalArgumentException.class, () -> generator.formIV(TOYOTA, TOYOTA));
     }
 
     @Test

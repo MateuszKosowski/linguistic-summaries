@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.kosowskinowak.fuzzy.linguistic.Quantifier;
 import org.kosowskinowak.summary.LabelExpression;
+import org.kosowskinowak.summary.SentenceGrammar;
 
 /**
  * Podsumowanie lingwistyczne wielopodmiotowe porównujące dwa rozłączne podmioty P₁, P₂
@@ -57,16 +58,20 @@ public final class MultiSubjectSummary {
     /** Zdanie w języku quasi-naturalnym. */
     public String sentence() {
         String s1 = summarizer.text();
+        SentenceGrammar.Phrase phrase = form == Form.IV
+                ? null : SentenceGrammar.quantifiedCars(quantifier, " " + p1.name());
         return switch (form) {
-            case I -> capitalize(quantifier.name()) + " aut " + p1.name()
-                    + " w porównaniu do " + p2.name() + " ma: " + s1 + ".";
-            case II -> capitalize(quantifier.name()) + " aut " + p1.name()
-                    + " spełniających [" + qualifier.text() + "] w porównaniu do aut " + p2.name()
-                    + " spełniających [" + qualifier.text() + "] ma: " + s1 + ".";
-            case III -> capitalize(quantifier.name()) + " aut " + p1.name()
-                    + ", które spełniają [" + qualifier.text() + "], w porównaniu do " + p2.name()
-                    + " ma: " + s1 + ".";
-            case IV -> "Więcej aut " + p1.name() + " niż " + p2.name() + " ma: " + s1 + ".";
+            case I -> phrase.subject() + " w porównaniu do " + p2.name()
+                    + " " + phrase.verb() + ": " + s1 + ".";
+            case II -> phrase.subject() + " " + phrase.qualifierAdjective() + " [" + qualifier.text()
+                    + "] w porównaniu do samochodów " + p2.name()
+                    + " spełniających [" + qualifier.text() + "] "
+                    + phrase.verb() + ": " + s1 + ".";
+            case III -> phrase.subject()
+                    + ", " + phrase.relativeClause() + " [" + qualifier.text()
+                    + "], w porównaniu do " + p2.name()
+                    + " " + phrase.verb() + ": " + s1 + ".";
+            case IV -> "Więcej samochodów " + p1.name() + " niż " + p2.name() + " ma: " + s1 + ".";
         };
     }
 
@@ -94,7 +99,4 @@ public final class MultiSubjectSummary {
         return Optional.ofNullable(qualifier);
     }
 
-    private static String capitalize(String s) {
-        return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
 }

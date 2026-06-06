@@ -33,11 +33,12 @@ public final class SingleSubjectSummary {
 
     /** Zdanie w języku quasi-naturalnym. */
     public String sentence() {
-        String q = capitalize(quantifier.name());
+        SentenceGrammar.Phrase phrase = SentenceGrammar.quantifiedCars(quantifier, "");
         if (qualifier == null) {
-            return q + " aut ma: " + summarizer.text() + ".";
+            return phrase.subject() + " " + phrase.verb() + ": " + summarizer.text() + ".";
         }
-        return q + " aut, które spełniają [" + qualifier.text() + "], ma: " + summarizer.text() + ".";
+        return phrase.subject() + ", " + phrase.relativeClause() + " [" + qualifier.text() + "], "
+                + phrase.verb() + ": " + summarizer.text() + ".";
     }
 
     public Quantifier quantifier() {
@@ -52,7 +53,4 @@ public final class SingleSubjectSummary {
         return summarizer;
     }
 
-    private static String capitalize(String s) {
-        return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
 }
