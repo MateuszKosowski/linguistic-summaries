@@ -23,6 +23,7 @@ public final class FuzzySet {
         this.mf = mf;
     }
 
+    /** Stopień przynależności μ(x) wyznaczony przez funkcję przynależności zbioru. */
     public double membership(double x) {
         return mf.degree(x);
     }
@@ -117,14 +118,17 @@ public final class FuzzySet {
         return sum / xs.length;
     }
 
+    /** Dopełnienie: nowy zbiór z funkcją 1 − μ i nazwą „nie …". */
     public FuzzySet complement() {
         return new FuzzySet("nie " + name, universe, Operations.complement(mf));
     }
 
+    /** Suma (t-konorma maksimum) dwóch zbiorów nad tą samą przestrzenią rozważań. */
     public FuzzySet union(FuzzySet other) {
         return new FuzzySet(name + " ∪ " + other.name, universe, Operations.union(mf, other.mf));
     }
 
+    /** Iloczyn (t-norma minimum) dwóch zbiorów nad tą samą przestrzenią rozważań. */
     public FuzzySet intersect(FuzzySet other) {
         return new FuzzySet(name + " ∩ " + other.name, universe, Operations.intersection(mf, other.mf));
     }

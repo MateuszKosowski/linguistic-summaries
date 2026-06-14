@@ -237,7 +237,7 @@ public final class SummaryGui {
         addRow(panel, 0, new JLabel("P1"), subjectA, new JLabel("P2"), subjectB,
                 new JLabel("Forma"), multiForm, new JLabel("Sortuj"), multiSort,
                 new JLabel("TOP"), multiTop, generate);
-        addRow(panel, 1, new JLabel("Kwalifikator S2"), multiQualifierVariable, multiQualifierLabel);
+        addSpanning(panel, 1, flowRow(new JLabel("Kwalifikator S2"), multiQualifierVariable, multiQualifierLabel));
         updateMultiControls();
         return panel;
     }
@@ -318,13 +318,13 @@ public final class SummaryGui {
         singleModel.setRowCount(0);
         for (ScoredSingle row : rows) {
             Quality q = row.quality();
-            Object[] values = new Object[14];
+            Object[] values = new Object[13];
             values[0] = row.summary().sentence();
             double[] measures = q.toArray();
             for (int i = 0; i < measures.length; i++) {
                 values[i + 1] = fmt(measures[i]);
             }
-            values[13] = fmt(q.optimal());
+            values[12] = fmt(q.optimal());
             singleModel.addRow(values);
         }
     }
@@ -550,11 +550,35 @@ public final class SummaryGui {
     }
 
     private void addWeights(JPanel panel, int row) {
+        JPanel flow = flowRow(new JLabel("Wagi miar:"));
         for (int i = 0; i < weights.length; i++) {
             weights[i] = new JSpinner(new SpinnerNumberModel(1.0, 0.0, 10.0, 0.1));
-            addAt(panel, new JLabel(Quality.NAMES[i]), i * 2, row);
-            addAt(panel, weights[i], i * 2 + 1, row);
+            flow.add(new JLabel(Quality.NAMES[i]));
+            flow.add(weights[i]);
         }
+        addSpanning(panel, row, flow);
+    }
+
+    /** Wiersz kontrolek o równych odstępach (FlowLayout), niezależny od kolumn GridBag. */
+    private static JPanel flowRow(java.awt.Component... components) {
+        JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        for (java.awt.Component c : components) {
+            flow.add(c);
+        }
+        return flow;
+    }
+
+    /** Dodaje komponent jako wiersz rozciągnięty na całą szerokość panelu. */
+    private static void addSpanning(JPanel panel, int row, java.awt.Component component) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(3, 4, 3, 4);
+        panel.add(component, gbc);
     }
 
     private static void addRow(JPanel panel, int row, java.awt.Component... components) {

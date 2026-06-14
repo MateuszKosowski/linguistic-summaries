@@ -24,19 +24,23 @@ public final class ClassicSet {
         return predicate.test(x) ? 1.0 : 0.0;
     }
 
+    /** Czy x spełnia twardy warunek przynależności. */
     public boolean contains(double x) {
         return predicate.test(x);
     }
 
+    /** Dopełnienie: zbiór z zanegowanym predykatem, nazwa „nie …". */
     public ClassicSet complement() {
         return new ClassicSet("nie " + name, universe, x -> !predicate.test(x));
     }
 
+    /** Suma (OR): rekord należy, gdy spełnia którykolwiek z predykatów. */
     public ClassicSet union(ClassicSet other) {
         return new ClassicSet(name + " ∪ " + other.name, universe,
                 x -> predicate.test(x) || other.predicate.test(x));
     }
 
+    /** Iloczyn (AND): rekord należy, gdy spełnia oba predykaty. */
     public ClassicSet intersect(ClassicSet other) {
         return new ClassicSet(name + " ∩ " + other.name, universe,
                 x -> predicate.test(x) && other.predicate.test(x));
