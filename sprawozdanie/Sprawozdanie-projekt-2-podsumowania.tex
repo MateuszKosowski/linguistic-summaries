@@ -6,6 +6,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[pass]{geometry}
+\usepackage{pdflscape}
 \usepackage{booktabs}
 \usepackage{float}
 \usepackage{array}
@@ -253,7 +255,7 @@ Sąsiednie trapezy są tak dobrane, że się ze sobą nakładają -- dla
 każdej wartości $x$ suma stopni przynależności do wszystkich pięciu
 etykiet wynosi w~przybliżeniu $1$, a w~punkcie przejścia między
 sąsiednimi etykietami obie mają stopień $0{,}5$ (przykład:
-rys.~\ref{fig:mf-engine-hp}).
+wykres mocy silnika w~osobnym załączniku).
 
 \paragraph{Dobór parametrów.} Wartości parametrów $(a,b,c,d)$ dla
 każdej z~5 etykiet wszystkich 12 zmiennych zebranych w~tabelach
@@ -264,11 +266,11 @@ ogólnych zasad obowiązujących w~motoryzacji. W~podpisach tabel
 informacja ta nie jest powtarzana.
 
 W~kolejnych podpunktach dla każdej zmiennej podano: przestrzeń rozważań
-$X$, tabelę parametrów $(a,b,c,d)$ wszystkich pięciu etykiet oraz wykres
-funkcji przynależności (linią ciągłą) wraz z~obszarem wsparcia
-(odpowiadający kolorystycznie wypełnione obszary). Dla zaoszczędzenia
-miejsca opis każdej zmiennej zajmuje pojedynczą tabelę i pojedynczy
-rysunek.
+$X$ oraz tabelę parametrów $(a,b,c,d)$ wszystkich pięciu etykiet.
+Aby zmieścić się w~limicie stron, odpowiadające im wykresy funkcji
+przynależności (linią ciągłą, z~zaznaczonym obszarem wsparcia)
+zebrano w~\textbf{osobnym załączniku} (plik \texttt{Zalaczniki.pdf}); tam
+też znajdują się wykresy obu rodzin kwantyfikatorów z~\S\ref{sec:quant}.
 
 % ----------- 12 zmiennych ------------
 
@@ -290,15 +292,6 @@ wielkogabarytowy  & 5\,100 & 5\,300 & 6\,500 & 6\,500 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_length_mm.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,długość pojazdu'' $L \in [1500,6500]$~mm. Granice etykiet odpowiadają
-segmentom Euro: A ($<$3,7 m), B (3,7--4,5 m), C/D (4,5--4,9 m),
-E (4,9--5,3 m), F ($>$5,3 m).}
-\label{fig:mf-length}
-\end{figure}
 
 \subsubsection{Rozstaw osi (\texttt{wheelbase\_mm}), $X = [1300, 4000]$ mm}
 \begin{table}[H]
@@ -318,13 +311,6 @@ limuzynowy   & 2\,950 & 3\,050 & 4\,000 & 4\,000 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_wheelbase_mm.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,rozstaw osi'' $W \in [1300, 4000]$~mm.}
-\label{fig:mf-wheelbase}
-\end{figure}
 
 \subsubsection{Masa własna (\texttt{curb\_weight\_kg}), $X = [500, 3500]$ kg}
 \begin{table}[H]
@@ -344,13 +330,6 @@ masywny         & 1\,850 & 2\,050 & 3\,500 & 3\,500 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_curb_weight_kg.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,masa własna pojazdu'' $M \in [500, 3500]$~kg.}
-\label{fig:mf-mass}
-\end{figure}
 
 \subsubsection{Pojemność bagażnika (\texttt{minimum\_trunk\_capacity\_l}), $X = [0, 1500]$ l}
 \begin{table}[H]
@@ -372,13 +351,6 @@ pojemny       & 450 & 500 & 600 & 700 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_minimum_trunk_capacity_l.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,pojemność bagażnika'' $B \in [0, 1500]$~l.}
-\label{fig:mf-trunk}
-\end{figure}
 
 \subsubsection{Moment obrotowy (\texttt{maximum\_torque\_n\_m}), $X = [0, 1100]$ Nm}
 \begin{table}[H]
@@ -398,13 +370,6 @@ potężny       & 450 & 550 & 1\,100 & 1\,100 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_maximum_torque_n_m.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,maksymalny moment obrotowy'' $T \in [0, 1100]$~Nm.}
-\label{fig:mf-torque}
-\end{figure}
 
 \subsubsection{Pojemność skokowa silnika (\texttt{capacity\_cm3}), $X = [400, 8000]$ cm$^3$}
 \begin{table}[H]
@@ -424,13 +389,6 @@ gigantyczny        & 3\,500 & 4\,500 & 8\,000 & 8\,000 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_capacity_cm3.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,pojemność skokowa silnika'' $V \in [400, 8000]$~cm$^3$.}
-\label{fig:mf-capacity}
-\end{figure}
 
 \subsubsection{Moc silnika (\texttt{engine\_hp}), $X = [0, 800]$ KM}
 \begin{table}[H]
@@ -450,16 +408,6 @@ wyczynowy    & 300 & 400 & 800 & 800 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_engine_hp.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,moc silnika'' $P \in [0, 800]$~KM. Zauważalne liniowe przejścia
-w~punktach 50\,\%-stopnia przynależności (np. dla $P=100$~KM:
-$\mu_{\text{anemiczny}}(P)=\mu_{\text{słaby}}(P)=0{,}5$) ilustrują rozmyte
-pokrycie zupełne wymagane konstrukcją trapezów.}
-\label{fig:mf-engine-hp}
-\end{figure}
 
 \subsubsection{Średnica zawracania (\texttt{turning\_circle\_m}), $X = [5, 20]$ m}
 \begin{table}[H]
@@ -479,13 +427,6 @@ ociężały     & 12{,}5 & 13{,}5 & 20{,}0 & 20{,}0 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_turning_circle_m.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,średnica zawracania'' $R \in [5, 20]$~m.}
-\label{fig:mf-turn}
-\end{figure}
 
 \subsubsection{Spalanie mieszane (\texttt{mixed\_fuel\_consumption\_per\_100\_km\_l}), $X = [0, 25]$ l/100~km}
 \begin{table}[H]
@@ -505,13 +446,6 @@ rozrzutny    & 12 & 15 & 25 & 25 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_mixed_fuel_consumption_per_100_km_l.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,spalanie mieszane'' $F \in [0, 25]$~l/100~km.}
-\label{fig:mf-fuel}
-\end{figure}
 
 \subsubsection{Pojemność zbiornika paliwa (\texttt{fuel\_tank\_capacity\_l}), $X = [10, 160]$ l}
 \begin{table}[H]
@@ -531,13 +465,6 @@ ogromny      & 80 & 90 & 160 & 160 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_fuel_tank_capacity_l.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,pojemność zbiornika paliwa'' $J \in [10, 160]$~l.}
-\label{fig:mf-tank}
-\end{figure}
 
 \subsubsection{Czas przyspieszenia 0--100 km/h (\texttt{acceleration\_0\_100\_km/h\_s}), $X = [2, 25]$ s}
 \begin{table}[H]
@@ -559,15 +486,6 @@ ospały      & 11 & 13 & 15 & 17 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_acceleration_0_100_s.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,czas przyspieszenia 0--100~km/h'' $A \in [2, 25]$~s. Niskie wartości
-$A$ ($<$5~s) odpowiadają samochodom szybkim, wysokie ($>$15~s) --
-samochodom wolnym.}
-\label{fig:mf-accel}
-\end{figure}
 
 \subsubsection{Prędkość maksymalna (\texttt{max\_speed\_km\_per\_h}), $X = [80, 360]$ km/h}
 \begin{table}[H]
@@ -587,13 +505,6 @@ błyskawiczny  & 250 & 280 & 360 & 360 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{mf_max_speed_km_per_h.png}
-\caption{Funkcje przynależności pięciu etykiet zmiennej lingwistycznej
-,,prędkość maksymalna'' $S \in [80, 360]$~km/h.}
-\label{fig:mf-vmax}
-\end{figure}
 
 % --------------------------------------------------------------
 \subsection{Kwantyfikatory lingwistyczne (liczności obiektów)}
@@ -640,15 +551,6 @@ prawie wszystkie & 0{,}85 & 0{,}95 & 1{,}00 & 1{,}00 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{quantifiers_relative.png}
-\caption{Funkcje przynależności pięciu kwantyfikatorów względnych
-zdefiniowanych na przestrzeni $X_Q = [0, 1]$. Argumentem
-jest proporcja obiektów spełniających warunek (np. $r=0{,}5$:
-$\mu_{\text{około połowy}}=1$).}
-\label{fig:quant-rel}
-\end{figure}
 
 \subsubsection{Kwantyfikatory bezwzględne}
 
@@ -678,83 +580,533 @@ dużo                  & 14\,000 & 16\,000 & 25\,000 & 25\,000 \\
 \bottomrule
 \end{tabular}
 \end{table}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{quantifiers_absolute.png}
-\caption{Funkcje przynależności czterech kwantyfikatorów bezwzględnych
-zdefiniowanych na przestrzeni $X_Q^{\text{abs}} = [0, 25\,000]$.
-Argumentem jest liczba obiektów spełniających warunek.}
-\label{fig:quant-abs}
-\end{figure}
 
 
 % =====================================================================
 \section{Narzędzia obliczeniowe: wybór/implementacja. Diagram UML klas do obliczeń rozmytych i generowania podsumowań}
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień 10 wg Harmonogramu Zajęć na WIKAMP KSR.}
 
-Diagram UML i zwięzły opis pakietu obliczeń rozmytych: źródło pakietu
-(zewnętrzny/własny/hybrydowy), przypis do literatury/źródeł. Krótka charakterystyka
-najważniejszych klas i podstawowych dla zadania ich metod. \\
+\subsection{Źródło pakietu obliczeniowego}
+Pakiet obliczeń rozmytych ma charakter \textbf{hybrydowy}. Trzon -- reprezentacja
+zbiorów rozmytych i ich własności, zmiennych lingwistycznych, kwantyfikatorów,
+sumaryzatorów/kwalifikatorów oraz podsumowań i ich miar jakości -- jest
+\emph{własną} implementacją, opartą o definicje z literatury przedmiotu
+(\cite{zadeh75}, \cite{zadeh83}, \cite{yager82}, \cite{kacprzyk-yager01},
+\cite{niewiadomski08}; podsumowania wielopodmiotowe wg \cite{superson14}).
+Jako składnik \emph{zewnętrzny} użyto wyłącznie biblioteki \texttt{jFuzzyLogic}
+\cite{jfuzzylogic} -- i to tylko do liczenia wartości trzech funkcji
+przynależności (trójkątnej, trapezoidalnej, gaussowskiej). Dostęp do danych
+realizuje sterownik \texttt{sqlite-jdbc} (relacyjna baza SQLite przez JDBC),
+a logowanie -- SLF4J/Logback. Całość budowana jest narzędziem Maven; zależności
+pobierane są automatycznie (\texttt{jFuzzyLogic} z repozytorium JitPack).
 
-Wersja JRE i inne wymogi niezbędne do uruchomienia aplikacji przez użytkownika na własnym komputerze.
+
+\subsection{Charakterystyka najważniejszych klas}
+Poniżej zwięzły opis klas, ich pól oraz kluczowych metod. Dla czytelności
+diagram klas rozbito na rysunki odpowiadające najważniejszym grupom pakietów.
+W raporcie pokazano diagramy dotyczące generowania i oceny podsumowań
+(rys.~\ref{fig:uml-summary}--\ref{fig:uml-multi}), a pomocnicze diagramy
+pakietów rozmytych, dostępu do danych i GUI przeniesiono do załącznika.
+Klasy używane z~innych pakietów pokazano jako odnośniki (puste boksy)
+w~ramce ,,z~innych pakietów''.
+
+\paragraph{Pakiet \texttt{fuzzy.set} -- zbiory i przestrzeń rozważań.}
+\texttt{Universe} reprezentuje przestrzeń rozważań w dwóch wariantach: gęstym
+(\texttt{continuous}, równomierne próbkowanie) i dyskretnym (\texttt{discrete},
+co~1); metoda \texttt{samplePoints()} dostarcza punkty siatki do numerycznego
+liczenia własności. \texttt{FuzzySet} łączy nazwę, przestrzeń i funkcję
+przynależności; udostępnia własności wymagane w zadaniu -- \texttt{height()},
+\texttt{support()}, \texttt{alphaCut()}, \texttt{isNormal()}, \texttt{isEmpty()},
+\texttt{isConvex()} -- operacje teoriomnogościowe (\texttt{complement},
+\texttt{union}, \texttt{intersect}) oraz względne liczności nośnika i $\sigma$-count
+używane przez miary jakości. \texttt{ClassicSet} to odpowiednik zbioru klasycznego
+(twardy predykat 0/1) z tymi samymi operacjami. \texttt{Interval} (rekord)
+opisuje nośnik/$\alpha$-przekrój.
+
+\paragraph{Pakiet \texttt{fuzzy.mf} -- funkcje przynależności.}
+Interfejs funkcyjny \texttt{MembershipFunction} ma jedną metodę
+\texttt{degree(x)}. Klasy \texttt{TriangularMf}, \texttt{TrapezoidalMf},
+\texttt{GaussianMf} delegują obliczenie do \texttt{jFuzzyLogic} (z przycięciem
+wyniku do $[0,1]$). \texttt{Operations} dostarcza dopełnienie, sumę (t-konorma
+maksimum) i iloczyn (t-norma minimum) jako dekoratory funkcji przynależności.
+
+\paragraph{Pakiet \texttt{fuzzy.linguistic} -- warstwa lingwistyczna.}
+\texttt{LinguisticVariable} wiąże atrybut bazy z przestrzenią rozważań i zestawem
+etykiet; \texttt{degreeOf(label,x)} i \texttt{isValid(x)} obsługują przeliczanie
+i odrzucanie braków danych. \texttt{Label} (rekord) to nazwana etykieta nad
+zbiorem rozmytym. \texttt{Quantifier} reprezentuje kwantyfikator względny lub
+bezwzględny; \texttt{degree(quantity)} zwraca stopień dopasowania proporcji lub
+liczności.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.80\linewidth,height=0.26\textheight,keepaspectratio]{uml_summary.png}
+    \caption{Diagram klas pakietów \texttt{config}, \texttt{summary}
+    i~\texttt{summary.quality}: konfiguracja zmiennych i~kwantyfikatorów
+    (\texttt{FuzzyConfig}); wyrażenia sumaryzatora/kwalifikatora -- interfejs
+    \texttt{LabelExpression} z~implementacjami \texttt{Property} (pojedyncza
+    etykieta) i~\texttt{Connective} (złożenie spójnikiem AND/OR); zdanie
+    jednopodmiotowe i~jego generator (\texttt{SingleSubjectSummary},
+    \texttt{SummaryGenerator}); miary jakości $T_1$--$T_{11}$ wraz
+    z~podsumowaniem optymalnym (\texttt{QualityMeasures}, rekord \texttt{Quality},
+    \texttt{QualityWeights}). Klasy \texttt{LinguisticVariable}, \texttt{Label},
+    \texttt{Quantifier} i~\texttt{CarRecord} pochodzą z~innych pakietów (ramka
+    u~dołu).}
+    \label{fig:uml-summary}
+\end{figure}
+
+\paragraph{Pakiet \texttt{summary} -- podsumowania jednopodmiotowe.}
+Interfejs \texttt{LabelExpression} (z implementacjami \texttt{Property} -- pojedyncza
+etykieta, oraz \texttt{Connective} -- złożenie spójnikiem AND/OR) reprezentuje
+sumaryzator lub kwalifikator i liczy stopień przynależności rekordu
+(\texttt{degree(rec)}). \texttt{SingleSubjectSummary} składa kwantyfikator,
+opcjonalny kwalifikator i sumaryzator w zdanie (\texttt{sentence()}) w pierwszej
+lub drugiej formie. \texttt{SummaryGenerator} produkuje zbiory kandydujących
+podsumowań na podstawie konfiguracji.
+
+\paragraph{Pakiet \texttt{summary.quality} -- miary jakości.}
+\texttt{QualityMeasures.evaluate(\dots)} wyznacza w jednym przebiegu po rekordach
+komplet miar $T_1$--$T_{11}$ oraz wartość podsumowania optymalnego, zwracając
+rekord \texttt{Quality}. \texttt{QualityWeights} przechowuje znormalizowane wagi
+miar (sterowane z GUI) i liczy ważoną sumę.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.74\linewidth,height=0.30\textheight,keepaspectratio]{uml_multi.png}
+    \caption{Diagram klas pakietu \texttt{summary.multi} -- podsumowania
+    wielopodmiotowe w~formach I--IV: \texttt{MultiSubjectSummary} (z~wyliczeniem
+    \texttt{Form} i~fabrykami \texttt{formI}--\texttt{formIV}), wyróżnianie
+    rozłącznych podmiotów \texttt{Subject} (np.~\texttt{ofMake}), stopień
+    prawdziwości $T$ (\texttt{MultiSubjectMeasures}) oraz generator kandydatów
+    (\texttt{MultiSubjectGenerator}). Zależności do \texttt{Quantifier},
+    \texttt{LabelExpression}, \texttt{FuzzyConfig} i~\texttt{CarRecord} prowadzą
+    do klas z~innych pakietów (ramka u~dołu).}
+    \label{fig:uml-multi}
+\end{figure}
+
+\paragraph{Pakiet \texttt{summary.multi} -- podsumowania wielopodmiotowe.}
+\texttt{Subject} to nazwany predykat wyróżniający rozłączny podmiot
+(np.~\texttt{ofMake} -- jedna marka). \texttt{MultiSubjectSummary} reprezentuje
+cztery formy (I--IV) porównujące podmioty $P_1$, $P_2$, z fabrykami
+\texttt{formI}\,/\,\texttt{formII}\,/\,\texttt{formIII}\,/\,\texttt{formIV} i metodą
+\texttt{sentence()}. \texttt{MultiSubjectMeasures.degreeOfTruth(\dots)} liczy
+stopień prawdziwości $T$ wg \cite{superson14}, a \texttt{MultiSubjectGenerator}
+generuje kandydatów dla zadanej pary podmiotów.
+
+\paragraph{Pakiet \texttt{data} -- dostęp do bazy.}
+\texttt{CarRecord} (rekord) przechowuje wartości atrybutów jednego pojazdu.
+\texttt{DbImporter} ładuje przefiltrowany plik CSV do bazy SQLite, a
+\texttt{CarDataLoader} czyta rekordy przez JDBC; \texttt{Columns} centralizuje
+nazwy kolumn. \texttt{DataCleaner} to jednorazowe narzędzie selekcji kolumn
+i odrzucenia rekordów z brakami (przygotowanie zbioru roboczego).
+
+\subsection{Wymagania uruchomieniowe}
+Aplikacja wymaga \textbf{JDK/JRE w wersji 25 (Java~25~LTS)} -- zgodnie
+z wymogiem ,,najnowsza wersja LTS'' -- oraz narzędzia \textbf{Apache Maven}
+do zbudowania i pobrania zależności. Baza danych nie wymaga osobnego serwera:
+SQLite jest wbudowaną, plikową bazą relacyjną, a sterownik \texttt{sqlite-jdbc}
+zawiera natywne biblioteki dla głównych systemów (Windows, Linux, macOS).
+Pozostałe zależności (\texttt{jFuzzyLogic} przez JitPack, SLF4J/Logback) są
+pobierane automatycznie przy budowaniu. Uruchomienie części obliczeniowej
+następuje przez \texttt{mvn exec:java} (lub z zbudowanego pakietu); przy
+pierwszym starcie zbiór roboczy jest importowany z pliku CSV do bazy
+\texttt{cars.db}, a kolejne uruchomienia czytają już z bazy.
 
 % =====================================================================
 \section{Jednopodmiotowe podsumowania lingwistyczne. Miary jakości, podsumowanie optymalne}
-Wyniki kolejnych eksperymentów wg punktów 2.-4. opisu projektu 2.  Listy podsumowań
-jednopodmiotowych i tabele/rankingi podsumowań dla danych atrybutów obowiązkowe i dokładnie opisane w ,,captions'' (tytułach), konieczny opis kolumn i wierszy tabel. Dla każdego podsumowania podane miary jakości oraz miara jakości podsumowania
-optymalnego. {\bf Wzorów podsumowań ani miar nie należy przepisywać ani cytować, wystarczy podać literaturę, ale
-należy skomentować co oznaczają i jaką informacje niosą wybrane miary w wybranych
-przypadkach.}\\
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień 11 wg Harmonogramu Zajęć na WIKAMP KSR.}
+\label{sec:single}
+
+% --------------------------------------------------------------
+\subsection{Metodyka eksperymentu}
+\label{sec:single-method}
+
+Eksperymenty przeprowadzono na całym roboczym podzbiorze
+$n = 23\,441$ rekordów (\S\ref{sec:db}); rekordy z~brakującą wartością
+któregokolwiek atrybutu użytego w~danym podsumowaniu są pomijane przy
+liczeniu miar. Generator wylicza pełne przestrzenie kandydatów:
+\begin{itemize}
+    \item \textbf{forma I, sumaryzator prosty, kwantyfikatory względne} --
+    $12$ zmiennych $\times\,5$ etykiet $\times\,5$ kwantyfikatorów
+    $= 300$ podsumowań;
+    \item \textbf{forma I, kwantyfikatory bezwzględne} --
+    $12\times 5\times 4 = 240$ podsumowań;
+    \item \textbf{forma II} z~ustalonym kwalifikatorem ,,masa~=~ciężki'' --
+    $11\times 5\times 5 = 275$ podsumowań;
+    \item \textbf{sumaryzatory złożone} (koniunkcja/alternatywa dwóch lub
+    trzech etykiet różnych zmiennych) -- wybrane przykłady demonstracyjne.
+\end{itemize}
+
+Każdemu podsumowaniu przypisano komplet $11$ miar jakości
+$T_1$--$T_{11}$ o~wartościach w~$[0,1]$ (wyższa = lepsza), wyznaczonych
+w~jednym przebiegu po rekordach wg definicji z~literatury
+(\cite{yager82}, \cite{kacprzyk-yager01}, \cite{zadrozny06},
+\cite{niewiadomski08}); zgodnie z~wymaganiami wzorów nie przytaczamy,
+a~znaczenie poszczególnych miar komentujemy przy konkretnych wynikach.
+Skrótowy sens wszystkich miar zestawia tabela w~\textbf{osobnym
+załączniku} (plik \texttt{Zalaczniki.pdf}). \emph{Podsumowanie
+optymalne} to ważona suma $T = \sum_{i} w_i T_i$; we wszystkich rankingach
+przyjęto wagi równe $w_i = \tfrac{1}{11}$ (sterowalne z~GUI), zatem $T$ jest
+tu średnią arytmetyczną jedenastu miar. Rankingi sortujemy malejąco wg~$T$;
+w~tabelach \ref{tab:f1rel}--\ref{tab:f2} podajemy pierwszą dziesiątkę
+(lub komplet przykładów) wraz z~wszystkimi miarami i~wartością~$T$ (kolumna
+,,opt'').
+
+% --------------------------------------------------------------
+\subsection{Forma I: sumaryzator prosty, kwantyfikatory względne}
+\label{sec:f1rel}
+
+Tabela~\ref{tab:f1rel} przedstawia czołówkę rankingu $300$ podsumowań
+pierwszej formy z~kwantyfikatorami względnymi. Pierwsze miejsca zajmują
+zdania w~pełni prawdziwe ($T_1 = 1{,}000$): ,,Około połowy aut ma długość
+standardową'', ,,Około połowy aut ma standardowy rozstaw osi''. Wysoki
+$T_1$ oznacza, że \emph{względna $\sigma$-count} sumaryzatora (proporcja
+aut o~danej własności) trafia w~nośnik kwantyfikatora w~stopniu~$1$ --
+np. ok. połowy rekordów ma ,,standardową'' długość, co idealnie pasuje do
+kwantyfikatora ,,około połowy''.
+
+\begin{table}[H]
+\centering
+\caption{Forma~I, sumaryzator prosty, kwantyfikatory względne -- pierwsza
+dziesiątka spośród $300$ podsumowań w~rankingu wg podsumowania optymalnego
+$T$ (wagi równe). Kolumny: nr~pozycji; kwantyfikator $Q$; sumaryzator $S$
+(zmienna lingwistyczna~=~etykieta); miary $T_1$--$T_8$; wartość
+optymalna ,,opt''$=\tfrac{1}{11}\sum_i T_i$. Miary $T_9$--$T_{11}$ pominięto
+w~tabeli, gdyż w~formie~I są równe~$0$ (i~jako takie wchodzą do średniej~$T$).
+Każdy wiersz to jedno podsumowanie wraz z~kompletem swoich miar.}
+\label{tab:f1rel}
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{r l l r r r r r r r r r}
+\toprule
+\# & $Q$ & $S$ (zmienna = etykieta) & $T_1$ & $T_2$ & $T_3$ & $T_4$ & $T_5$ & $T_6$ & $T_7$ & $T_8$ & opt \\
+\midrule
+1  & około połowy & długość = standardowy        & 1,000 & 0,860 & 0,694 & 0,000 & 1,000 & 0,600 & 0,700 & 0,910 & 0,524 \\
+2  & około połowy & rozstaw osi = standardowy     & 1,000 & 0,889 & 0,621 & 0,000 & 1,000 & 0,600 & 0,700 & 0,926 & 0,522 \\
+3  & mniejszość   & śr.\ zawracania = zwrotny     & 1,000 & 0,900 & 0,435 & 0,000 & 1,000 & 0,650 & 0,775 & 0,933 & 0,518 \\
+4  & mniejszość   & poj.\ bagażnika = standardowy & 1,000 & 0,901 & 0,429 & 0,000 & 1,000 & 0,650 & 0,775 & 0,933 & 0,517 \\
+5  & mniejszość   & moment obrotowy = miękki      & 1,000 & 0,882 & 0,426 & 0,000 & 1,000 & 0,650 & 0,775 & 0,927 & 0,515 \\
+6  & mniejszość   & rozstaw osi = krótki          & 1,000 & 0,871 & 0,426 & 0,000 & 1,000 & 0,650 & 0,775 & 0,917 & 0,513 \\
+7  & około połowy & śr.\ zawracania = przeciętny  & 0,904 & 0,920 & 0,564 & 0,000 & 1,000 & 0,600 & 0,700 & 0,950 & 0,513 \\
+8  & mniejszość   & moment obrotowy = zrównoważony& 0,997 & 0,846 & 0,454 & 0,000 & 1,000 & 0,650 & 0,775 & 0,900 & 0,511 \\
+9  & mniejszość   & poj.\ skokowa = małolitrażowy & 1,000 & 0,921 & 0,314 & 0,000 & 1,000 & 0,650 & 0,775 & 0,947 & 0,510 \\
+10 & mniejszość   & spalanie = ekonomiczny        & 1,000 & 0,880 & 0,372 & 0,000 & 1,000 & 0,650 & 0,775 & 0,920 & 0,509 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Co różnicuje ranking.} Przy równym $T_1$ o~kolejności decyduje
+\textbf{stopień pokrycia $T_3$}: ,,długość~=~standardowy'' realnie obejmuje
+$69{,}4\,\%$ rekordów ($T_3 = 0{,}694$) i~stąd 1.~miejsce, podczas gdy
+rzadsza ,,poj.\ skokowa~=~małolitrażowy'' ($T_3 = 0{,}314$) spada na
+9.~pozycję mimo $T_1 = 1$. To pokazuje, że $T_1$ i~$T_3$ są jedynymi miarami
+silnie zależnymi od zawartości bazy i~to one niosą właściwą informację
+o~danych. Pozostałe miary mają charakter \emph{strukturalny}: $T_2, T_8
+\approx 0{,}9$ (etykiety mają wąskie nośniki względem uniwersum, więc
+sumaryzator jest ,,ostry''), $T_5 = 1$ (sumaryzator jednoelementowy jest
+najkrótszy i~najczytelniejszy), a~$T_6, T_7$ zależą od wyboru kwantyfikatora
+(węższa ,,mniejszość'': $T_6=0{,}65$, jest bardziej specyficzna niż szersze
+,,około połowy'': $T_6=0{,}60$). \textbf{Miara $T_4$ jest tożsamościowo
+zerowa} -- dla sumaryzatora jednoelementowego degeneruje się do $|r_1 - T_3|
+= 0$ i~nie niesie żadnej informacji; staje się użyteczna dopiero dla
+sumaryzatorów złożonych (\S\ref{sec:compound}).
+
+% --------------------------------------------------------------
+\subsection{Forma I: kwantyfikatory bezwzględne}
+\label{sec:f1abs}
+
+Tabela~\ref{tab:f1abs} zawiera analogiczny ranking dla kwantyfikatorów
+bezwzględnych, w~których argumentem jest \emph{liczba} (a~nie proporcja)
+rekordów spełniających sumaryzator. Czołówka jest niemal bliźniacza
+z~formą względną -- te same atrybuty (długość, rozstaw osi, średnica
+zawracania) zajmują pierwsze miejsca.
+
+\begin{table}[H]
+\centering
+\caption{Forma~I, sumaryzator prosty, kwantyfikatory bezwzględne -- pierwsza
+dziesiątka spośród $240$ podsumowań (ranking wg~$T$, wagi równe). Argumentem
+kwantyfikatora jest liczba rekordów spełniających sumaryzator. Kolumny jak
+w~tab.~\ref{tab:f1rel}; $T_9$--$T_{11}=0$ (forma~I).}
+\label{tab:f1abs}
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{r l l r r r r r r r r r}
+\toprule
+\# & $Q$ & $S$ (zmienna = etykieta) & $T_1$ & $T_2$ & $T_3$ & $T_4$ & $T_5$ & $T_6$ & $T_7$ & $T_8$ & opt \\
+\midrule
+1  & kilkanaście tys.\ & długość = standardowy       & 1,000 & 0,860 & 0,694 & 0,000 & 1,000 & 0,600 & 0,680 & 0,910 & 0,522 \\
+2  & kilkanaście tys.\ & rozstaw osi = standardowy    & 1,000 & 0,889 & 0,621 & 0,000 & 1,000 & 0,600 & 0,680 & 0,926 & 0,520 \\
+3  & kilkanaście tys.\ & śr.\ zawracania = przeciętny & 1,000 & 0,920 & 0,564 & 0,000 & 1,000 & 0,600 & 0,680 & 0,950 & 0,520 \\
+4  & kilka tys.\       & poj.\ skokowa = małolitrażowy& 1,000 & 0,921 & 0,314 & 0,000 & 1,000 & 0,720 & 0,800 & 0,947 & 0,518 \\
+5  & kilka tys.\       & rozstaw osi = wydłużony      & 1,000 & 0,889 & 0,307 & 0,000 & 1,000 & 0,720 & 0,800 & 0,926 & 0,513 \\
+6  & kilka tys.\       & poj.\ bagażnika = ciasny     & 1,000 & 0,867 & 0,336 & 0,000 & 1,000 & 0,720 & 0,800 & 0,917 & 0,513 \\
+7  & kilka tys.\       & spalanie = ekonomiczny       & 0,927 & 0,880 & 0,372 & 0,000 & 1,000 & 0,720 & 0,800 & 0,920 & 0,511 \\
+8  & kilka tys.\       & długość = długi              & 1,000 & 0,880 & 0,293 & 0,000 & 1,000 & 0,720 & 0,800 & 0,920 & 0,510 \\
+9  & kilka tys.\       & poj.\ zbiornika = niewielki  & 1,000 & 0,900 & 0,240 & 0,000 & 1,000 & 0,720 & 0,800 & 0,933 & 0,509 \\
+10 & kilka tys.\       & śr.\ zawracania = nieporęczny& 1,000 & 0,853 & 0,309 & 0,000 & 1,000 & 0,720 & 0,800 & 0,900 & 0,507 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Powtarzalność czołówki potwierdza, że o~pozycji podsumowania decyduje
+pokrycie $T_3$ i~kardynalność sumaryzatora $T_8$, a~nie rodzaj
+kwantyfikatora -- ten jedynie dobiera etykietę liczności (,,kilkanaście
+tysięcy'', ,,kilka tysięcy'') pasującą do faktycznej liczby rekordów.
+Jedyna widoczna różnica to wartości $T_6, T_7$, które tu opisują nośniki
+kwantyfikatorów na osi liczności: węższe ,,kilka tys.'' ($T_7 = 0{,}800$)
+jest bardziej specyficzne niż szersze ,,kilkanaście tys.'' ($T_7 = 0{,}680$).
+
+% --------------------------------------------------------------
+\subsection{Sumaryzatory złożone (koniunkcja i alternatywa)}
+\label{sec:compound}
+
+Tabela~\ref{tab:compound} pokazuje trzy podsumowania ze~złożonym
+sumaryzatorem, ujawniające zachowanie miar nieaktywnych w~przypadku
+prostym. Wszystkie mają \textbf{$T_1 = 0$}: ,,Większość aut jest
+dynamiczna i~paliwożerna'' jest \emph{fałszem}, bo koniunkcja (t-norma
+minimum) jest spełniana w~znikomym stopniu -- jedynie $13{,}9\,\%$ rekordów
+($T_3 = 0{,}139$) wpada w~oba warunki naraz, co nie sięga nośnika
+kwantyfikatora ,,większość'' ($\ge 0{,}6$).
+
+\begin{table}[H]
+\centering
+\caption{Sumaryzatory złożone z~kwantyfikatorem ,,większość'' -- dwie
+koniunkcje ($\wedge$, t-norma minimum) i~jedna alternatywa ($\vee$,
+t-konorma maksimum). Kolumny jak w~tab.~\ref{tab:f1rel}. Mimo niezerowej
+wartości optymalnej wszystkie trzy podsumowania mają $T_1=0$ (są fałszywe);
+zob.\ komentarz w~tekście.}
+\label{tab:compound}
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{r l l r r r r r r r r r}
+\toprule
+\# & $Q$ & $S$ (sumaryzator złożony) & $T_1$ & $T_2$ & $T_3$ & $T_4$ & $T_5$ & $T_6$ & $T_7$ & $T_8$ & opt \\
+\midrule
+1 & większość & moc = dynamiczny $\wedge$ spalanie = paliwożerny                              & 0,000 & 0,723 & 0,139 & 0,037 & 0,500 & 0,650 & 0,750 & 0,816 & 0,329 \\
+2 & większość & $V_{\max}$ = wyścigowy $\vee$ moc = dynamiczny                                 & 0,000 & 0,738 & 0,387 & 0,301 & 0,500 & 0,650 & 0,750 & 0,827 & 0,378 \\
+3 & większość & moc = dynamiczny $\wedge$ spalanie = paliwożerny $\wedge$ $V_{\max}$ = wyścigowy & 0,000 & 0,732 & 0,108 & 0,076 & 0,250 & 0,650 & 0,750 & 0,824 & 0,308 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Przykład ten ilustruje trzy rzeczy. Po~pierwsze, \textbf{wartości
+optymalnej nie wolno czytać jako prawdziwości}: opt $= 0{,}33$ przy
+$T_1 = 0$ bierze się z~niezerowych miar strukturalnych ($T_2, T_6, T_7,
+T_8$), niezależnych od danych. Po~drugie, \textbf{$T_4$ przestaje być
+zerowe} (0,037--0,301) -- dla sumaryzatora złożonego mierzy ono rozbieżność
+między iloczynem brzegowych pokryć atomów a~ich łącznym pokryciem; alternatywa
+(wiersz~2), spełniana łatwiej niż koniunkcja, ma wyraźnie wyższe $T_3$ i~$T_4$,
+a~w~efekcie najwyższe opt w~trójce. Po~trzecie, \textbf{$T_5$ maleje wraz
+z~długością}: dwie etykiety $\Rightarrow T_5 = 0{,}5$, trzy
+$\Rightarrow T_5 = 0{,}25$ -- to systematyczna kara za~złożoność (mniejszą
+czytelność) zdania.
+
+% --------------------------------------------------------------
+\subsection{Forma II: podsumowania z kwalifikatorem}
+\label{sec:f2}
+
+W~formie drugiej kwalifikator zawęża rozważaną populację; tu ustalono
+,,masa~=~ciężki''. $T_1$ liczone jest \emph{warunkowo} -- jaka część aut
+ciężkich ma daną własność. Tabela~\ref{tab:f2} pokazuje czołówkę $275$
+podsumowań; w~odróżnieniu od~formy~I \textbf{aktywują się miary kwalifikatora
+$T_9$--$T_{11}$}.
+
+\begin{table}[H]
+\centering
+\caption{Forma~II, kwalifikator ,,masa własna~=~ciężki'' -- pierwsza
+dziesiątka spośród $275$ podsumowań (ranking wg~$T$, wagi równe). Kolumny:
+nr; kwantyfikator $Q$; sumaryzator $S$; pełen komplet miar $T_1$--$T_{11}$;
+opt. Kolumny $T_9$--$T_{11}$ (miary kwalifikatora) są tu niezerowe i~stałe,
+bo kwalifikator jest wspólny dla wszystkich wierszy.}
+\label{tab:f2}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{r l l r r r r r r r r r r r r}
+\toprule
+\# & $Q$ & $S$ (zmienna = etykieta) & $T_1$ & $T_2$ & $T_3$ & $T_4$ & $T_5$ & $T_6$ & $T_7$ & $T_8$ & $T_9$ & $T_{10}$ & $T_{11}$ & opt \\
+\midrule
+1  & około połowy & długość = standardowy        & 1,000 & 0,860 & 0,731 & 0,000 & 1,000 & 0,600 & 0,700 & 0,910 & 0,817 & 0,875 & 1,000 & 0,772 \\
+2  & około połowy & rozstaw osi = standardowy     & 1,000 & 0,889 & 0,673 & 0,000 & 1,000 & 0,600 & 0,700 & 0,926 & 0,817 & 0,875 & 1,000 & 0,771 \\
+3  & około połowy & śr.\ zawracania = przeciętny  & 1,000 & 0,920 & 0,567 & 0,000 & 1,000 & 0,600 & 0,700 & 0,950 & 0,817 & 0,875 & 1,000 & 0,766 \\
+4  & około połowy & rozstaw osi = wydłużony       & 1,000 & 0,889 & 0,606 & 0,000 & 1,000 & 0,600 & 0,700 & 0,926 & 0,817 & 0,875 & 1,000 & 0,765 \\
+5  & mniejszość   & poj.\ bagażnika = standardowy & 1,000 & 0,901 & 0,397 & 0,000 & 1,000 & 0,650 & 0,775 & 0,933 & 0,817 & 0,875 & 1,000 & 0,759 \\
+6  & około połowy & moc silnika = przyzwoity      & 1,000 & 0,875 & 0,542 & 0,000 & 1,000 & 0,600 & 0,700 & 0,919 & 0,817 & 0,875 & 1,000 & 0,757 \\
+7  & prawie żaden & poj.\ skokowa = małolitrażowy & 1,000 & 0,921 & 0,067 & 0,000 & 1,000 & 0,800 & 0,875 & 0,947 & 0,817 & 0,875 & 1,000 & 0,755 \\
+8  & około połowy & długość = długi               & 0,970 & 0,880 & 0,520 & 0,000 & 1,000 & 0,600 & 0,700 & 0,920 & 0,817 & 0,875 & 1,000 & 0,753 \\
+9  & około połowy & poj.\ bagażnika = pojemny     & 1,000 & 0,833 & 0,572 & 0,000 & 1,000 & 0,600 & 0,700 & 0,883 & 0,817 & 0,875 & 1,000 & 0,753 \\
+10 & około połowy & śr.\ zawracania = nieporęczny & 1,000 & 0,853 & 0,531 & 0,000 & 1,000 & 0,600 & 0,700 & 0,900 & 0,817 & 0,875 & 1,000 & 0,752 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Merytorycznie czołówka rysuje sylwetkę typowego \emph{ciężkiego} auta:
+,,Około połowy ciężkich aut ma standardową długość'', ,,\dots\ przyzwoitą
+moc'', a~,,Prawie żadne ciężkie auto nie ma małolitrażowego silnika''
+($T_3 = 0{,}067$) -- to ostatnie zdanie jest prawdziwe ($T_1 = 1$)
+i~nieoczywiste: niskie pokrycie niesie tu realną informację (ciężkie auta
+nie miewają małych silników). Aktywne miary kwalifikatora wynoszą
+$T_9 = 0{,}817$, $T_{10} = 0{,}875$ (nieprecyzyjność i~kardynalność etykiety
+,,ciężki'') oraz $T_{11} = 1{,}000$ (kwalifikator jednoelementowy, najkrótszy).
+
+\paragraph{Skok wartości optymalnej -- pułapka interpretacyjna.}
+Wartości opt w~formie~II ($0{,}75$--$0{,}77$) są dużo wyższe niż w~formie~I
+($\approx 0{,}52$), ale różnica jest \textbf{strukturalna, nie merytoryczna}:
+przy równych wagach trzy miary $T_9$--$T_{11}$ w~formie~I są zerowe i~ciągną
+średnią w~dół, a~w~formie~II wnoszą $\approx 0{,}9$. Dlatego \emph{rankingów
+optymalnych obu form nie należy porównywać między sobą} -- porównania mają
+sens tylko wewnątrz jednej formy, albo po~odpowiednim dobraniu wag (wyzerowaniu
+miar nieaktywnych) z~poziomu GUI.
+
+% --------------------------------------------------------------
+\subsection{Interpretacja miar i podsumowania optymalnego}
+\label{sec:single-interpret}
+
+Z~obliczeń wynika wyraźny podział miar wg~tego, ile informacji
+\emph{o~danych} niosą. Jedynie \textbf{$T_1$ (prawdziwość) i~$T_3$
+(pokrycie)} silnie zależą od~zawartości bazy i~realnie różnicują ranking.
+Miary $T_2, T_6, T_7, T_8$ zależą głównie od~konstrukcji zbiorów rozmytych
+(szerokości nośników), a~nie od~danych -- pełnią rolę preferencji zwięzłości;
+$T_5, T_{11}$ zależą tylko od~długości wyrażeń, $T_4$ niesie informację
+dopiero dla sumaryzatorów złożonych, a~$T_9$--$T_{11}$ -- tylko dla formy~II.
+Stąd dwa wnioski praktyczne dla wiarygodności rankingu: (i)~wysoki $T_1$ sam
+w~sobie nie świadczy o~wartości podsumowania -- zdania typu ,,Prawie żaden ma
+[rzadką etykietę]'' osiągają $T_1 = 1$ trywialnie (proporcja $\approx 0$
+trafia w~,,prawie żaden''), więc $T_1$ trzeba czytać łącznie z~$T_3$;
+(ii)~równe wagi faworyzują formę~II (z~aktywnymi $T_9$--$T_{11}$) i~karzą
+zdania krótkie, więc uczciwe rankingowanie wymaga porównań w~obrębie jednej
+formy albo świadomego doboru wag pod~kątem miar aktywnych w~danym eksperymencie.
 
 % =====================================================================
 \section{Wielopodmiotowe podsumowania lingwistyczne i~ich miary jakości}
-Wyniki kolejnych eksperymentów wg punktów 2.-4. opisu projektu 2. Uzasadnienie i
-metoda podziału zbioru danych na rozłączne podmioty. Listy podsumowań
-wielopodmiotowych i tabele/rankingi podsumowań dla danych atrybutów obowiązkowe i
-dokładnie opisane w ,,captions'' (tytułach), konieczny opis kolumn i wierszy tabel.
-{\bf Wzorów podsumowań ani miar nie należy przepisywać ani cytować, wystarczy podać literaturę, ale
-należy skomentować co oznaczają i jaką informacje niosą wybrane miary w wybranych
-przypadkach.} Konieczne uwzględnienie wszystkich 4-ch form podsumowań wielopodmiotowych.
-\\
 
-** Możliwe sformułowanie zagadnienia wielopodmiotowego podsumowania optymalnego **.\\
-\indent {** Ewentualne wyniki realizacji punktu ,,na ocenę 5.0'' wg opisu Projektu 2. i ich porównanie do wyników z
-części obowiązkowej **.}\\
+Eksperyment wielopodmiotowy wykonano dla rozłącznych podmiotów
+$P_1=\text{BMW}$ i $P_2=\text{Toyota}$, wyznaczonych z atrybutu
+\texttt{Make}. W formach II--III użyto kwalifikatora $S_2$: ,,masa własna
+= ciężki''. Aplikacja wygenerowała 910 kandydatów: 300 dla formy~I, po 275
+dla form II--III (po odrzuceniu tautologii, gdzie $S_1$ dotyczył tej samej
+zmiennej co $S_2$) oraz 60 dla formy~IV. Dla podsumowań wielopodmiotowych
+liczono stopień prawdziwości $T$ wg~\cite{superson14}; literatura nie
+definiuje tu pełnego zestawu miar $T_1$--$T_{11}$.
 
-\noindent {\bf Sekcja uzupełniona jako efekt zadania Tydzień 12 wg Harmonogramu Zajęć
-na WIKAMP KSR.}
+Wybór marek BMW i Toyota nie był przypadkowy: obie grupy mają w zbiorze
+wystarczająco dużo rekordów, ale reprezentują inne profile konstrukcyjne.
+Toyota ma dużo modeli miejskich i rodzinnych, natomiast BMW częściej
+występuje w wersjach mocniejszych, cięższych i szybszych. Dzięki temu
+podsumowanie wielopodmiotowe nie jest tylko ćwiczeniem formalnym, lecz
+sprawdza, czy język rozmyty potrafi uchwycić różnicę, którą w danych
+widać po wielu atrybutach naraz.
+
+\begin{table}[H]
+\centering
+\caption{Najlepsze podsumowania wielopodmiotowe (TOP 1 dla każdej formy) dla porównania BMW
+($P_1$) i Toyoty ($P_2$). Kolumna ,,forma'' wskazuje jedną z czterech
+postaci podsumowań wielopodmiotowych, kolumna $T$ -- stopień prawdziwości
+zdania, a ostatnia kolumna podaje zdanie wygenerowane przez aplikację.
+Wiele wartości $T=1{,}000$ oznacza, że dany stosunek stopni spełnienia
+idealnie wpada w nośnik użytego kwantyfikatora; nie należy tego czytać
+jako samodzielnej miary istotności bez interpretacji treści zdania.}
+\label{tab:multi-bmw-toyota}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l r r p{12.5cm}}
+\toprule
+Forma & \# & $T$ & Podsumowanie \\
+\midrule
+I & 1 & 1{,}000 & Prawie żaden samochód BMW w porównaniu do Toyota ma: Długość pojazdu = krótki. \\
+\midrule
+II & 1 & 1{,}000 & Prawie wszystkie samochody BMW spełniające [Masa własna = ciężki] w porównaniu do samochodów Toyota spełniających [Masa własna = ciężki] mają: Długość pojazdu = krótki. \\
+\midrule
+III & 1 & 1{,}000 & Prawie żaden samochód BMW, który spełnia [Masa własna = ciężki], w porównaniu do Toyota ma: Długość pojazdu = krótki. \\
+\midrule
+IV & 1 & 1{,}000 & Więcej samochodów BMW niż Toyota ma: Średnica zawracania = ociężały. \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Wyniki wskazują, że BMW w porównaniu z Toyotą częściej trafia w etykiety
+większych i mocniejszych aut. Najczytelniej pokazuje to forma~IV:
+,,średnica zawracania = ociężały''.
+Formy I--III dają bogatsze zdania
+z kwantyfikatorem, lecz wiele remisów $T=1{,}000$, więc wartość $T$ należy
+czytać razem z treścią zdania. Forma~II porównuje ciężkie BMW z ciężkimi
+Toyotami, a forma~III -- ciężkie BMW z całą Toyotą; są to różne pytania
+badawcze, mimo podobnej skali wyniku.
+
+Najważniejsza różnica między formami jest interpretacyjna. Forma~I odpowiada
+na pytanie, jak często obiekty z $P_1$ mają daną własność w porównaniu z
+$P_2$. Forma~II zawęża oba podmioty kwalifikatorem, więc porównuje dwie
+podpopulacje tego samego typu (tu: ciężkie BMW i ciężkie Toyoty). Forma~III
+zawęża tylko pierwszy podmiot, przez co pokazuje ciężkie BMW na tle całej
+Toyoty. Forma~IV jest najprostsza językowo i dlatego najlepiej sprawdza się
+do szybkiej interpretacji, ale traci informację o tym, jaki kwantyfikator
+opisuje skalę różnicy.
+
+W praktyce oznacza to, że w części wielopodmiotowej sam ranking po $T$ jest
+mniej wystarczający niż w części jednopodmiotowej. Stopień prawdziwości
+mówi, czy zdanie pasuje do wybranego kwantyfikatora, ale nie rozstrzyga,
+czy zdanie jest najciekawsze poznawczo. Dlatego w tabeli pokazano po jednym
+najlepszym przykładzie każdej formy, a interpretację oparto na treści
+zdań i porównaniu ich znaczenia.
 
 
 % =====================================================================
 \section{Dyskusja, wnioski}
-We wnioskach z badania skomentować wyłącznie wpływ wybranych parametrów (zbiorów rozmytych, zmiennych lingwistycznych, miar podobieństwa, itp.) na jakość procesu klasyfikacji. Innymi słowy – wnioski to to, co wynika z przeprowadzonych obliczeń, a nie to co wiadomo z literatury. \\
-Komentować należy wyłącznie zbiór danych i zanczenie otrzymanych podsumowań. Metody nie komentujemy. \\
-Dokładne interpretacje uzyskanych wyników w zależności od parametrów
-opisanych w punktach 3.-4 opisu Projektu 2.
-Omówić i wyjaśnić napotkane problemy (jeśli były). Każdy wniosek/problem powinien mieć poparcie
-w przeprowadzonych eksperymentach (odwołania do konkretnych wyników: podsumowań i miar
-jakości). Ocena które podsumowania i dlaczego niosą najistotniejsze informacje
-i które ich miary jakości mają małe albo duże znaczenie dla wiarygodności i jakości otrzymanych
-agregacji/podsumowań.  \\
-\underline{Dla końcowej oceny jest to najważniejsza sekcja} sprawozdania, gdyż prezentuje poziom
-zrozumienia rozwiązywanego problemu.\\
 
-** Możliwości kontynuacji prac w obszarze logiki rozmytej i wnioskowania rozmytego, zwłaszcza w kontekście pracy inżynierskiej,
-magisterskiej, naukowej, itp. **\\
+Z przeprowadzonych obliczeń wynikają następujące wnioski.
 
-\noindent {\bf Sekcja uzupełniona jako efekt zadań Tydzień 11 i Tydzień 12 wg
-Harmonogramu Zajęć na WIKAMP KSR.}
+\begin{itemize}
+    \item \textbf{Sama prawdziwość nie wystarcza do oceny przydatności
+    podsumowania.} Zdania typu ,,prawie żaden obiekt ma rzadką cechę'' często
+    osiągają $T_1=1{,}000$, bo faktycznie mało rekordów spełnia warunek.
+    Nauczyło nas to, że $T_1$ trzeba czytać razem z pokryciem $T_3$ i treścią
+    kwantyfikatora. Prawdziwość mówi, czy zdanie pasuje do danych; nie mówi
+    jeszcze, czy zdanie jest poznawczo ciekawe.
 
+    \item \textbf{Najwięcej o całej bazie mówiły etykiety środkowe i dobrze
+    pokrywające rozkład.} W rankingach jednopodmiotowych wysoko powtarzały
+    się cechy takie jak standardowa długość, standardowy rozstaw osi,
+    przeciętna średnica zawracania czy małolitrażowa pojemność skokowa.
+    Oznacza to, że zbiór roboczy jest zdominowany przez typowe samochody
+    osobowe, a nie przez skrajne konstrukcje. To nie jest założenie o rynku,
+    tylko informacja uzyskana z policzonych pokryć i prawdziwości zdań.
 
-% =====================================================================
-\section{Braki w realizacji projektu 2.}
-Wymienić wg opisu Projektu 2. wszystkie niezrealizowane obowiązkowe elementy projektu, ewentualnie
-podać merytoryczne (ale nie czasowe) przyczyny tych braków.
+    \item \textbf{Kwalifikator zmienia pytanie badawcze, a nie tylko zawęża
+    tabelę wyników.} Po ustawieniu kwalifikatora ,,masa własna = ciężki''
+    pojawiły się zdania, które opisują nie całą bazę, lecz profil aut ciężkich.
+    Szczególnie pouczające jest podsumowanie o prawie braku ciężkich aut
+    małolitrażowych: niskie pokrycie $T_3=0{,}067$ nie jest tu wadą, lecz
+    właściwą treścią wniosku. Dowiedzieliśmy się, że dla pewnych pytań
+    badawczych małe pokrycie może być równie informacyjne jak duże.
+
+    \item \textbf{Miary strukturalne trzeba traktować jako preferencję formy,
+    a nie jako bezpośredni opis danych.} $T_2$, $T_6$, $T_7$ i $T_8$ zależą
+    głównie od szerokości nośników i kardynalności zbiorów rozmytych.
+    Pomagają karać pojęcia zbyt szerokie lub zbyt mało specyficzne, ale nie
+    zastępują interpretacji pokrycia i prawdziwości. Widać to szczególnie
+    przy porównaniu formy I i II: wzrost wartości optymalnej w formie II
+    częściowo wynika z aktywacji miar kwalifikatora $T_9$--$T_{11}$.
+
+    \item \textbf{W części wielopodmiotowej nauczyliśmy się, że jedna liczba
+    $T$ nie porządkuje całej wiedzy o porównaniu marek.} BMW i Toyota różnią
+    się przede wszystkim w etykietach związanych z gabarytami i osiągami:
+    BMW częściej wpada w opisy aut cięższych, szybszych i mniej zwrotnych.
+    Jednak wiele zdań ma $T=1{,}000$, więc ranking wymaga komentarza
+    językowego. Forma IV jest najłatwiejsza do szybkiej interpretacji, ale
+    formy I--III pozwalają odróżnić pytania o całą markę, ciężkie egzemplarze
+    obu marek oraz ciężkie BMW na tle całej Toyoty.
+
+    \item \textbf{Najbardziej wiarygodne porównania powstają wewnątrz jednej
+    formy i przy ustalonych wagach.} Porównywanie wartości optymalnej między
+    różnymi formami może prowadzić do fałszywych wniosków, bo różne formy
+    aktywują inne miary albo opisują inne populacje. Z tego powodu GUI
+    pozwala zmieniać wagi i sortowanie, ale interpretacja końcowa musi
+    uwzględniać, jakie pytanie zadaje dana forma podsumowania.
+\end{itemize}
 
 
 % =====================================================================
 \begin{thebibliography}{99}
+\small
+\setlength{\itemsep}{0pt}
+\setlength{\parsep}{0pt}
 
 \bibitem{niewiadomski19} A. Niewiadomski,
 \textit{Zbiory rozmyte typu 2. Zastosowania w reprezentowaniu informacji},
@@ -792,8 +1144,20 @@ ss. 133--154, 2001.
 \textit{Car Specification Dataset 1945--2020}, Kaggle, 2020.\\
 \url{https://www.kaggle.com/datasets/jahaidulislam/car-specification-dataset-1945-2020}
 
+\bibitem{superson14} A. Niewiadomski, I. Superson,
+,,On multi-subjectivity in linguistic summarization of relational databases'',
+\textit{Journal of Theoretical and Applied Computer Science}, vol. 8, nr 1,
+ss. 15--34, 2014.
+
+\bibitem{jfuzzylogic} P. Cingolani, J. Alcalá-Fdez,
+,,jFuzzyLogic: a Java library to design fuzzy logic controllers according to
+the standard for fuzzy control programming'', \textit{International Journal of
+Computational Intelligence Systems}, vol. 6, sup. 1, ss. 61--75, 2013.
+
 \end{thebibliography}
 
 Literatura zawiera wyłącznie źródła recenzowane i/lub o potwierdzonej wiarygodności,
 możliwe do weryfikacji i cytowane w sprawozdaniu.
+
+% =====================================================================
 \end{document}

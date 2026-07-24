@@ -1,4 +1,4 @@
-package org.kosowskinowak;
+package org.kosowskinowak.data;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,12 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
+/**
+ * Narzędzie przygotowania danych: z oryginalnego zbioru CSV (78 kolumn) wybiera 15 kolumn
+ * roboczych i odrzuca rekordy z brakami, tworząc {@code dataset_CRS_task_2.csv}. Krok
+ * jednorazowy, uruchamiany ręcznie ({@link #main}); aplikacja właściwa czyta dane przez DBMS
+ * ({@link DbImporter} → {@link CarDataLoader}).
+ */
 public class DataCleaner {
 
     private static final Logger logger = LoggerFactory.getLogger(DataCleaner.class);
@@ -29,6 +35,10 @@ public class DataCleaner {
     private static final String MSG_ERROR_IO = "An error occurred during file operations: {}";
 
     private static final Pattern CSV_SPLITTER = Pattern.compile(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+
+    public static void main(String[] args) {
+        new DataCleaner().cleanData();
+    }
 
     public void cleanData() {
         String inputFile = "src/main/resources/original dataset/Car Dataset 1945-2020.csv";

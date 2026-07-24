@@ -1,0 +1,506 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\inn}{\ensuremath{\mathrm{in}}}
+
+\definecolor{mkbg}{RGB}{44,110,180}
+\definecolor{anbg}{RGB}{160,90,30}
+
+\newcommand{\pyt}[1]{\medskip\noindent\textbf{\textcolor{mkbg}{Pytanie:} #1}\par\smallskip}
+\newcommand{\pytan}[1]{\medskip\noindent\textbf{\textcolor{anbg}{Pytanie:} #1}\par\smallskip}
+
+\title{Podsumowania lingwistyczne --- notatka egzaminacyjna\\[3pt]
+\large Odpowiedzi do zagadnień (MK --- szczegółowo, AN --- skrótowo)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent\textit{Notatka odpowiada na zebrane zagadnienia egzaminacyjne. Część~\textbf{MK}
+(nasz prowadzący) jest rozwinięta dokładnie, część~\textbf{AN} skrótowo, ale z kompletem
+pojęć. Każda odpowiedź jest osadzona w faktycznej implementacji projektu --- w nawiasach
+podaję klasy/pliki, w których dane pojęcie żyje w kodzie. Domena przykładów: samochody
+(moc silnika, masa, długość, spalanie).}
+
+\tableofcontents
+
+% =====================================================================
+\section*{Mini-słownik (żeby wszystko miało wspólny język)}
+\addcontentsline{toc}{section}{Mini-słownik}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Przestrzeń rozważań} $X$ --- zbiór wszystkich możliwych wartości cechy
+  (np. moc $\in [0, 600]$~KM). W kodzie \code{Universe} (próbkowana siatką punktów).
+\item \textbf{Zbiór rozmyty} $A$ --- przypisuje każdemu $x\in X$ stopień przynależności
+  $\mu_A(x)\in[0,1]$ (zamiast twardego 0/1). W kodzie \code{FuzzySet} + funkcja
+  przynależności \code{MembershipFunction}.
+\item \textbf{Etykieta} --- słowo języka naturalnego (np. ,,mocny'') sklejone z jednym
+  zbiorem rozmytym (\code{Label}).
+\item \textbf{Zmienna lingwistyczna} --- cecha (np. ,,Moc silnika'') wraz z zestawem
+  etykiet (\code{LinguisticVariable}).
+\item \textbf{$\Sigma$-count} --- suma stopni przynależności (uogólnienie ,,liczby
+  elementów'' na zbiory rozmyte). To kluczowe narzędzie liczbowe całego projektu.
+\end{itemize}
+
+% #####################################################################
+\part*{Część I --- MK (rozwinięta)}
+\addcontentsline{toc}{section}{\textbf{CZĘŚĆ I --- MK}}
+
+% =====================================================================
+\section{Kardynalność (liczność) zbioru rozmytego}
+
+\pyt{Kardynalność / liczba kardynalna zbioru rozmytego.}
+
+W zbiorze \emph{klasycznym} kardynalność to po prostu liczba elementów. W zbiorze
+\emph{rozmytym} element należy ,,po trochu'', więc zamiast liczyć sztuki, \textbf{sumujemy
+stopnie przynależności}. To tzw.\ \textbf{$\Sigma$-count} (skalarna liczność):
+\[
+  \big|A\big| \;=\; \Sigma\text{count}(A) \;=\; \sum_{x\in X} \mu_A(x).
+\]
+Intuicja: jeśli trzy auta należą do zbioru ,,mocny'' w stopniach $1{,}0$, $0{,}6$ i $0{,}3$,
+to ,,jest tam'' $1{,}9$ mocnego auta --- nie całe trzy, bo dwa pasują tylko częściowo.
+
+\medskip
+\textbf{Względna kardynalność} dzieli liczność przez rozmiar przestrzeni:
+\(
+  \|A\| = |A| / |X|.
+\)
+W projekcie liczona numerycznie jako \emph{średni stopień przynależności} po próbkach
+przestrzeni --- \code{FuzzySet.relativeSigmaCardinality()}:
+\[
+  \|A\| \;=\; \frac{1}{|X|}\sum_{x\in X}\mu_A(x).
+\]
+
+\medskip
+\textbf{Gdzie to działa w projekcie.} Cały aparat miar jakości stoi na $\Sigma$-countach:
+stopień prawdziwości $T_1$ liczy $\frac{1}{m}\sum_i \mu_S(d_i)$ (to $\Sigma$-count
+sumaryzatora po rekordach), a miary kardynalności $T_7,T_8,T_{10}$ używają względnej
+kardynalności zbiorów ($\code{relativeSigmaCardinality()}$).
+
+\medskip
+\textbf{Uwaga --- dwie różne ,,licznoci''.} Projekt rozróżnia:
+\begin{itemize}[leftmargin=*]
+\item \emph{liczność $\Sigma$-count} = $\sum \mu(x)$ --- bierze pod uwagę kszta\l t funkcji
+  (pole pod nią);
+\item \emph{liczność nośnika} = ile punktów ma $\mu>0$ (\code{relativeSupportCardinality()})
+  --- bierze tylko szerokość, ignoruje wysokość. To jest ,,poziom rozmytości'' $\inn(A)$
+  (patrz §\ref{sec:fuzziness}).
+\end{itemize}
+
+% =====================================================================
+\section{Suma i iloczyn zbiorów rozmytych (i alternatywne normy)}
+\label{sec:union-inter}
+
+\pyt{Suma, iloczyn zbioru --- co to, do czego, oraz ,,inaczej suma'' (s-norma).}
+
+To rozmyte odpowiedniki logicznych \textbf{OR} i \textbf{AND}. W projekcie zdefiniowane
+w \code{Operations} (dekoratory funkcji przynależności) i wystawione przez
+\code{FuzzySet.union/intersect}:
+\[
+  \text{Iloczyn (AND):}\quad \mu_{A\cap B}(x) = \min\big(\mu_A(x),\,\mu_B(x)\big),
+\qquad
+  \text{Suma (OR):}\quad \mu_{A\cup B}(x) = \max\big(\mu_A(x),\,\mu_B(x)\big).
+\]
+
+\textbf{Do czego służą.} Budują \emph{złożone} sumaryzatory i kwalifikatory:
+\begin{itemize}[leftmargin=*]
+\item \emph{Iloczyn} --- ,,auto mocne \textbf{i} ciężkie''. Liczymy $\min$: o ocenie
+  decyduje \textbf{najsłabsza} cecha (rygorystyczne ,,oba warunki naraz''). Auto mocne na
+  $0{,}9$, ale lekkie (ciężkie na $0{,}2$) $\to$ iloczyn $=0{,}2$.
+\item \emph{Suma} --- ,,auto szybkie \textbf{lub} tanie''. Liczymy $\max$: wystarczy jedna
+  mocna cecha. Auto powolne ($0{,}1$), ale tanie ($0{,}8$) $\to$ suma $=0{,}8$.
+\end{itemize}
+
+\paragraph{,,Inaczej suma'' --- s-norma (i t-norma).} $\min$ i $\max$ to tylko
+\emph{jeden, najpopularniejszy} wybór. Ogólnie:
+\begin{itemize}[leftmargin=*]
+\item iloczyn realizuje dowolna \textbf{t-norma} $T(a,b)$ (przemienna, łączna, monotoniczna,
+  $T(a,1)=a$),
+\item suma --- dowolna \textbf{s-norma} (t-konorma) $S(a,b)$ (jak wyżej, ale $S(a,0)=a$).
+\end{itemize}
+Najczęstsze pary (dualne przez dopełnienie $1-\cdot$):
+\[
+\begin{array}{lll}
+\text{minimum / maksimum:} & T=\min(a,b) & S=\max(a,b)\\[2pt]
+\text{algebraiczna:} & T=a\cdot b & S=a+b-a\cdot b\\[2pt]
+\text{Łukasiewicza:} & T=\max(0,a+b-1) & S=\min(1,a+b)
+\end{array}
+\]
+Czyli ,,suma algebraiczna'' $a+b-ab$ to alternatywna s-norma; nasz projekt świadomie używa
+pary $\min/\max$ (komentarz w \code{Operations}: ,,t-norma minimum'', ,,t-konorma
+maksimum''). $\max$ jest \emph{najmniejszą} możliwą s-normą, $\min$ --- \emph{największą}
+t-normą.
+
+% =====================================================================
+\section{Dopełnienie zbioru}
+
+\pyt{Dopełnienie zbioru rozmytego.}
+
+Rozmyte \textbf{NOT}: ,,w jakim stopniu $x$ \emph{nie} pasuje do $A$''. Standardowo
+(\code{Operations.complement}):
+\[
+  \mu_{\neg A}(x) \;=\; 1 - \mu_A(x).
+\]
+Przykład: $210$~KM należy do ,,mocny'' w stopniu $0{,}7$, więc do ,,nie mocny'' w stopniu
+$0{,}3$. W kodzie \code{FuzzySet.complement()} tworzy nowy zbiór o nazwie ,,nie \dots''.
+
+\medskip
+\textbf{Ważna różnica względem zbiorów klasycznych.} Dla zbiorów rozmytych
+\emph{nie zachodzą} prawa wyłączonego środka i sprzeczności:
+\[
+  A \cup \neg A \neq X, \qquad A \cap \neg A \neq \varnothing.
+\]
+Np.\ przy $\mu_A(x)=0{,}5$ mamy $\mu_{A\cap\neg A}(x)=\min(0{,}5;0{,}5)=0{,}5\neq 0$. To
+nie błąd --- to istota rozmytości (element może być ,,trochę w'' i ,,trochę poza'').
+
+% =====================================================================
+\section{Operacje na zbiorach --- zestawienie i własności}
+
+\pyt{Operacje na zbiorach.}
+
+Trzy podstawowe (wszystkie w \code{Operations} / \code{FuzzySet}), liczone
+\emph{punktowo} po przestrzeni:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Operacja & Wzór & Logika \\
+\midrule
+Dopełnienie & $1-\mu_A(x)$ & NOT \\
+Iloczyn & $\min(\mu_A(x),\mu_B(x))$ & AND (t-norma) \\
+Suma & $\max(\mu_A(x),\mu_B(x))$ & OR (s-norma) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Własności, które warto znać:} przemienność, łączność, rozdzielność,
+\emph{prawa De Morgana} ($\neg(A\cup B)=\neg A\cap\neg B$ --- zachodzą dla pary
+$\min/\max$), idempotentność ($A\cap A=A$). \emph{Nie} zachodzą prawa
+sprzeczności/wyłączonego środka (patrz wyżej). Warunek poprawności: oba zbiory muszą być
+nad \textbf{tą samą przestrzenią} --- w kodzie \code{union}/\code{intersect} przyjmują
+zbiory nad tym samym \code{Universe}.
+
+% =====================================================================
+\section{Miara T8 --- kardynalność sumaryzatora}
+
+\pyt{Cechy miary T8 (stopień kardynalności sumaryzatora).}
+
+\textbf{Za co odpowiada.} Mierzy, jak ,,ostry'' (skupiony) jest sumaryzator $S$ ---
+podobnie jak nieprecyzyjność $T_2$, ale licząc na \emph{kardynalnościach} (pole pod
+funkcją), a nie tylko na szerokości nośnika. Dzięki temu odróżnia trójkąt od trapezu o tej
+samej podstawie. To miara \textbf{strukturalna} --- zależy od projektu zbiorów rozmytych,
+\emph{nie} od danych w bazie.
+\[
+  T_8 \;=\; 1 - \sqrt[n]{\;\prod_{j=1}^{n} \frac{|S_j|}{|X_j|}\;}
+       \;=\; 1 - \sqrt[n]{\;\prod_{j=1}^{n}\|S_j\|\;},
+\]
+gdzie $\|S_j\|$ to względna kardynalność $j$-tego atomu (w kodzie
+\code{relativeSigmaCardinality()}), a $n$ --- liczba etykiet w sumaryzatorze
+(średnia \emph{geometryczna} po atomach).
+
+\textbf{Zakres i interpretacja.} $[0,1]$; \textbf{wyżej $=$ ostrzejszy} (węższy względem
+uniwersum) sumaryzator. W projekcie typowo $\approx 0{,}88$--$0{,}95$ (etykiety są wąskie
+względem pełnego zakresu cechy).
+
+\textbf{Implementacja:} \code{QualityMeasures}, \code{t8 = 1 - geometricMean(cardS)}.
+
+% =====================================================================
+\section{Miara T11 --- długość kwalifikatora}
+
+\pyt{Cechy miary T11.}
+
+\textbf{Za co odpowiada.} Symetryczny odpowiednik $T_5$ (długość \emph{sumaryzatora}), ale
+dla \textbf{kwalifikatora} $W$: krótszy kwalifikator (mniej etykiet) $=$ czytelniejsze
+zdanie. Czysto \textbf{formalna} kara za złożoność --- nie zależy ani od danych, ani od
+kształtu zbiorów.
+\[
+  T_{11} \;=\; 2\cdot(0{,}5)^{|W|},
+\]
+gdzie $|W|$ to liczba etykiet w kwalifikatorze.
+
+\textbf{Zakres:} $(0,1]$; $|W|=1\Rightarrow T_{11}=1$, i maleje \emph{wykładniczo o połowę}
+z każdą dodaną etykietą ($2\to0{,}5$, $3\to0{,}25$).
+
+\textbf{Kluczowa cecha --- istnieje tylko w formie 2.} W formie 1 (bez kwalifikatora)
+$T_{11}=0$ z definicji. \emph{Uwaga:} $T_{11}$ \textbf{nie występuje w książce źródłowej}
+(Niewiadomski definiuje $T_1$--$T_{10}$). W projekcie dodana przez analogię do $T_5$, żeby
+kwalifikator też miał miarę długości. Implementacja: \code{t11 = 2.0 * Math.pow(0.5, mr)}.
+
+% =====================================================================
+\section{Dwie formy wyrażeń kwantyfikowanych lingwistycznie}
+\label{sec:forms}
+
+\pyt{Dwie formy wyrażeń kwantyfikowanych lingwistycznie (formy 1 i 2 podsumowania).}
+
+To dwa szablony zdań Zadeha/Yagera. W projekcie buduje je \code{SingleSubjectSummary}.
+
+\paragraph{Forma 1 (protozdanie, bez kwalifikatora): ,,$Q\ P$ są $S$''.}
+\[
+  T_1 = \mu_Q\!\Big(\tfrac{1}{m}\textstyle\sum_{i=1}^m \mu_S(d_i)\Big)
+  \quad(\text{kwant. względny}),\qquad
+  T_1 = \mu_Q\!\big(\textstyle\sum_i \mu_S(d_i)\big)\ (\text{bezwzględny}).
+\]
+Przykład: \emph{,,Większość aut ma standardową długość''}. Liczymy proporcję aut
+spełniających $S$ i sprawdzamy, czy trafia w kwantyfikator $Q$.
+
+\paragraph{Forma 2 (z kwalifikatorem $W$): ,,$Q\ P$ będących $W$ są $S$''.}
+W kodzie: \emph{,,[Q] aut, które są [W], ma [S]''}. Kwalifikator $W$ zawęża populację
+(rozmyty odpowiednik \code{WHERE}). Stopień prawdziwości liczony \textbf{warunkowo}:
+\[
+  T_1 = \mu_Q\!\left(\frac{\sum_{i=1}^m \min\big(\mu_W(d_i),\,\mu_S(d_i)\big)}
+                          {\sum_{i=1}^m \mu_W(d_i)}\right).
+\]
+Przykład: \emph{,,Większość ciężkich aut ma dużą moc''} ($W=$ ,,ciężki'').
+
+\textbf{Różnica praktyczna.} Forma 1 mówi o \emph{całej} bazie; forma 2 --- o
+\emph{wycinku} (autach spełniających $W$). Forma 2 aktywuje dodatkowe miary $T_9,T_{10},
+T_{11}$ (jakość kwalifikatora), których w formie 1 nie ma (są zerowe).
+
+% =====================================================================
+\section{Zadanie: policzenie kardynalności dla zbioru}
+
+\pyt{Policzyć kardynalność dla (rozmytego) zbioru.}
+
+Schemat liczenia (przykład reprezentatywny --- liczby zależą od konkretnego zadania).
+Niech przestrzeń to pięć aut, a zbiór rozmyty $A=$,,mocny silnik'' ma stopnie:
+\[
+  A = \frac{0{,}2}{a_1} + \frac{0{,}8}{a_2} + \frac{1{,}0}{a_3} + \frac{0{,}5}{a_4}
+      + \frac{0{,}0}{a_5}.
+\]
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Kardynalność ($\Sigma$-count)} --- suma stopni:
+  \[
+    |A| = 0{,}2+0{,}8+1{,}0+0{,}5+0{,}0 = \boxed{2{,}5}.
+  \]
+\item \textbf{Względna kardynalność} --- podziel przez $|X|=5$:
+  \[
+    \|A\| = 2{,}5/5 = \boxed{0{,}5}.
+  \]
+\item \textbf{Nośnik i jego liczność} --- elementy z $\mu>0$:
+  $\text{supp}(A)=\{a_1,a_2,a_3,a_4\}$, więc $|\text{supp}(A)|=4$, a
+  \emph{poziom rozmytości} $\inn(A)=4/5=0{,}8$.
+\item \textbf{Wysokość} $=\max_x\mu_A(x)=1{,}0$ $\Rightarrow$ zbiór \textbf{normalny}.
+\end{enumerate}
+
+\noindent\emph{Kontrast klasyczny:} gdyby zbiór był ostry (tylko $0$/$1$), kardynalność
+$=$ liczba elementów z przynależnością $1$. $\Sigma$-count to gładkie uogólnienie: zlicza
+,,częściowe'' przynależności.
+
+% #####################################################################
+\part*{Część II --- AN (skrótowo)}
+\addcontentsline{toc}{section}{\textbf{CZĘŚĆ II --- AN}}
+
+% =====================================================================
+\section{Zbiory, nośnik, $\alpha$-przekrój, poziom rozmytości}
+
+\pytan{Nośnik zbioru i $\alpha$-przekrój.}
+\textbf{Nośnik} $\text{supp}(A)=\{x:\mu_A(x)>0\}$ --- wszystko, co należy choć trochę.
+\textbf{$\alpha$-przekrój} $A_\alpha=\{x:\mu_A(x)\ge\alpha\}$ --- wszystko, co należy
+\emph{przynajmniej w stopniu $\alpha$}; ostry (klasyczny) zbiór ,,wycięty'' na wysokości
+$\alpha$. Im wyższe $\alpha$, tym węższy przekrój. Nośnik $\approx$ przekrój dla $\alpha\to
+0^+$, a rdzeń (core) $=A_1$. W kodzie: \code{FuzzySet.support()} i \code{alphaCut(alpha)}
+(zwracają przedział obejmujący).
+
+\pytan{Co to i do czego ,,poziom (stopień) rozmytości''.}
+\label{sec:fuzziness}
+To miara, jak ,,rozlany'' jest zbiór: $\inn(A)=|\text{supp}(A)|/|X|$ (w kodzie
+\code{relativeSupportCardinality()}). $\inn(A)$ blisko $0$ $=$ wąska, precyzyjna etykieta;
+blisko $1$ $=$ rozmazana na całe uniwersum. \textbf{Do czego służy:} jest cegiełką miar
+nieprecyzyjności --- $T_2=1-\sqrt[n]{\prod \inn(S_j)}$, $T_6=1-\inn(Q)$, $T_9=1-\inn(W)$.
+
+\pytan{Zbiór rozmyty i jego zastosowanie w reprezentacji informacji lingwistycznych.}
+Zbiór rozmyty modeluje \emph{nieostre pojęcie języka naturalnego} (,,mocny'', ,,duży'',
+,,szybki''), które nie ma twardej granicy. Funkcja $\mu$ tłumaczy słowo na liczbę: pozwala
+maszynie ocenić ,,$190$~KM jest mocne w stopniu $0{,}7$''. Dzięki temu możemy budować i
+\emph{oceniać} zdania w quasi-naturalnym języku --- to fundament całego projektu
+(\code{FuzzySet} $\to$ \code{Label} $\to$ \code{LinguisticVariable} $\to$ podsumowania).
+
+% =====================================================================
+\section{Zmienna lingwistyczna}
+
+\pytan{Zmienna lingwistyczna i jej zastosowanie.}
+To \textbf{cecha} (np.\ ,,Moc silnika'') wraz z: przestrzenią rozważań, kolumną bazy i
+\textbf{zestawem etykiet} (słów: ,,słaby'', ,,średni'', ,,mocny''), z których każda jest
+osobnym zbiorem rozmytym (\code{LinguisticVariable} + lista \code{Label}). \textbf{Zastosowanie:}
+zamienia surową liczbę z bazy (np.\ $130$~KM) na słowa ze stopniami przynależności --- to
+warstwa ,,liczby $\to$ słowa'', bez której nie da się ułożyć zdania podsumowania.
+
+% =====================================================================
+\section{Kwantyfikatory}
+
+\pytan{Kwantyfikatory względne i bezwzględne --- zastosowanie.}
+\textbf{Względny} działa na \emph{proporcji} $[0,1]$ (,,większość'', ,,około połowy'') ---
+mówi, jaka \emph{część} obiektów ma cechę. \textbf{Bezwzględny} działa na \emph{liczbie}
+sztuk (,,około 100 aut'') --- mówi o liczności. W projekcie (\code{Quantifier.Type})
+względne mają trapezy na $[0,1]$, np.\ ,,większość'' $=(0{,}60;0{,}70;0{,}85;0{,}95)$,
+,,około połowy'' $=(0{,}30;0{,}40;0{,}60;0{,}70)$. Zastosowanie: argumentem $\mu_Q$ jest
+proporcja (względny) lub sama suma $\Sigma$-count (bezwzględny) --- patrz $T_1$ w §\ref{sec:forms}.
+
+\pytan{Kwantyfikator rozmyty a kwantyfikator lingwistyczny --- różnica.}
+\textbf{Lingwistyczny} to samo \emph{słowo} języka naturalnego (,,większość'') ---
+pojęcie. \textbf{Rozmyty} to jego \emph{matematyczny model}: zbiór rozmyty z funkcją
+przynależności, którą da się policzyć. Innymi słowy: kwantyfikator lingwistyczny
+\emph{reprezentujemy} kwantyfikatorem rozmytym. W kodzie świetnie to widać: \code{Quantifier}
+trzyma \code{name} (warstwa lingwistyczna) \emph{oraz} \code{FuzzySet set} (warstwa rozmyta,
+czyli model).
+
+% =====================================================================
+\section{Paradoks Poincaré'a}
+
+\pytan{Paradoks Poincaré'a.}
+Dotyczy \textbf{nierozróżnialności}. Masy $a$ i $a{+}1$~grama są dla zmysłów
+nieodróżnialne ($a\approx a{+}1$), tak samo $a{+}1\approx a{+}2$ itd., ale $a$ i
+$a{+}1000$ \emph{są} rozróżnialne. Zatem relacja ,,nierozróżnialne'' jest \textbf{zwrotna}
+i \textbf{symetryczna}, lecz \textbf{nie przechodnia} --- łańcuch ,,równych'' kroków daje
+różnicę widoczną. To pokazuje, że klasyczna relacja równoważności (wymagająca
+przechodniości) \emph{nie nadaje się} do modelowania percepcji/podobieństwa --- stąd
+potrzeba \textbf{relacji sąsiedztwa} (tolerancji) i logiki rozmytej. Łączy się to wprost z
+pytaniami o relacje niżej.
+
+% =====================================================================
+\section{Relacje rozmyte: zwrotność, symetria, przechodniość}
+
+\pytan{Zwrotność i symetria relacji rozmytej --- przykłady z języka naturalnego.}
+Relacja rozmyta to $R:X\times X\to[0,1]$ ($R(x,y)=$ stopień, w jakim $x$ jest w relacji z $y$).
+\begin{itemize}[leftmargin=*]
+\item \textbf{Zwrotność:} $R(x,x)=1$. NL: ,,każde słowo jest w 100\% podobne do samego
+  siebie''; ,,auto jest tak samo szybkie jak ono samo''.
+\item \textbf{Symetria:} $R(x,y)=R(y,x)$. NL: ,,jeśli Kowalski jest podobny do Nowaka, to
+  Nowak jest tak samo podobny do Kowalskiego''; ,,bliski'', ,,sąsiad''.
+\end{itemize}
+
+\pytan{Relacja rozmyta przechodnia (tranzytywna) --- definicja.}
+\textbf{Przechodniość typu max-min:}
+\[
+  R(x,z)\;\ge\;\max_{y}\ \min\big(R(x,y),\,R(y,z)\big)\qquad\forall x,z.
+\]
+NL: jeśli $x$ jest podobny do $y$, a $y$ do $z$, to $x$ musi być podobny do $z$
+\emph{przynajmniej} w stopniu najsłabszego ogniwa po najlepszej drodze. (Ogólnie zamiast
+$\min$ dowolna t-norma --- $T$-przechodniość.)
+
+% =====================================================================
+\section{Podobieństwo: sąsiedztwo vs rozmyta równoważność}
+
+\pytan{Relacja sąsiedztwa a relacja podobieństwa --- cechy i definicja.}
+\pytan{Podobieństwo jako relacja sąsiedztwa czy jako rozmyta równoważność?}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Relacja sąsiedztwa} (tolerancji, proximity): \textbf{zwrotna + symetryczna},
+  \emph{bez} wymogu przechodniości. Rozmyty odpowiednik relacji tolerancji.
+\item \textbf{Relacja podobieństwa} w sensie Zadeha $=$ \textbf{rozmyta równoważność}:
+  zwrotna + symetryczna \textbf{+ przechodnia} (max-min). Rozmyty odpowiednik relacji
+  równoważności.
+\end{itemize}
+\textbf{Cała różnica to przechodniość.} I tu wraca Poincaré: realne ,,podobieństwo''
+percepcyjne \emph{łamie} przechodniość (łańcuch podobnych obiektów kończy się parą
+niepodobnych), więc naturalniej modelować je jako \textbf{relację sąsiedztwa}, a nie jako
+ścisłą rozmytą równoważność. Równoważność rozmyta to silniejsze, idealizowane założenie
+(pozwala na rozmyte klasy abstrakcji).
+
+\pytan{nGram --- czy jest symetryczna?}
+Miara podobieństwa oparta o $n$-gramy (liczba/udział wspólnych $n$-gramów dwóch napisów,
+np.\ współczynnik Dice'a) jest \textbf{symetryczna} --- ,,wspólne $n$-gramy $a$ i $b$'' to
+to samo co ,,wspólne $n$-gramy $b$ i $a$'', więc $\text{sim}(a,b)=\text{sim}(b,a)$. Jest
+też zwrotna ($\text{sim}(a,a)=1$), ale \textbf{nie} przechodnia --- więc jest
+\emph{relacją sąsiedztwa}, a nie rozmytą równoważnością.
+
+\pytan{Miara podobieństwa a metryka --- różnice.}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+ & Metryka $d(x,y)$ & Miara podobieństwa $s(x,y)$ \\
+\midrule
+Kierunek & $0=$ identyczne, rośnie z różnicą & $1=$ identyczne, maleje z różnicą \\
+Tożsamość & $d(x,x)=0$ & $s(x,x)=1$ (zwrotność) \\
+Symetria & tak & zwykle tak \\
+Nierówność trójkąta & \textbf{wymagana} & \textbf{nie} wymagana \\
+Zakres & $[0,\infty)$ & zwykle $[0,1]$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Krótko: metryka mierzy \emph{odległość} i musi spełniać nierówność trójkąta; miara
+podobieństwa mierzy \emph{bliskość} (odwrotnie) i nie musi. Często $s=1-d_{\text{znorm.}}$,
+ale nie każde podobieństwo pochodzi od metryki (brak nierówności trójkąta to dokładnie
+sytuacja sąsiedztwa/Poincaré).
+
+% =====================================================================
+\section{Miary jakości --- pojęcia AN}
+
+\pytan{Znaczenie miary ,,stopień nieprecyzyjności''.}
+Mówi, jak \textbf{ostre} są użyte etykiety (a nie co jest w danych). $T_2=1-\sqrt[n]{\prod
+\inn(S_j)}$ dla sumaryzatora (analogicznie $T_6$ dla kwantyfikatora, $T_9$ dla
+kwalifikatora). \textbf{Wyżej $=$ precyzyjniej} (wąskie zbiory względem uniwersum). To
+miara \emph{strukturalna} --- premiuje zdania zbudowane z ostrych pojęć, niezależnie od
+zawartości bazy.
+
+\pytan{Miara T3 (stopień pokrycia) --- co oznacza dla podsumowania.}
+Mówi, \textbf{jak dużą część rekordów} podsumowanie faktycznie obejmuje (udział aut z
+$\mu_S>0$; w formie 2 --- udział wśród spełniających kwalifikator). $T_3=0{,}694$ znaczy
+,,dotyczy 69{,}4\% aut''. Razem z $T_1$ to jedna z dwóch miar realnie zależnych od danych:
+$T_1$ mówi \emph{czy prawda}, $T_3$ --- \emph{o ilu obiektach}. Niskie $T_3$ nie zawsze
+jest złe (rzadkie, ale prawdziwe i nieoczywiste zdanie).
+
+\pytan{Cechy miary T5 (dwie).}
+$T_5=2\cdot(0{,}5)^{|S|}$ (długość sumaryzatora). Dwie cechy:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Zależy wyłącznie od liczby etykiet} $|S|$ --- nie od danych, nie od kształtu
+  ani szerokości zbiorów, nie od kwantyfikatora. Czysto formalna kara za złożoność
+  (czytelność).
+\item \textbf{Maleje wykładniczo o połowę}: $|S|{=}1\to1$ (najkrótsze, max), $2\to0{,}5$,
+  $3\to0{,}25$; wartości w $(0,1]$.
+\end{enumerate}
+
+% =====================================================================
+\section{Forma 2 podsumowania --- i co liczy się szybciej}
+
+\pytan{Druga forma jednopodmiotowego podsumowania lingwistycznego.}
+,,$Q$ aut, które są $W$ (kwalifikator), ma $S$ (sumaryzator)'' --- z kwalifikatorem
+zawężającym populację. $T_1$ liczony warunkowo (wzór w §\ref{sec:forms}).
+
+\pytan{Co liczy się szybciej: $S_1$ i $S_2$ bez kwalifikatora (forma 1, sumaryzator
+złożony) czy $S_1$ z $Q$ i $S_2$ jako kwalifikator (forma 2)?}
+Obie wersje robią \textbf{jeden przebieg} po rekordach, więc są tej samej klasy złożoności
+$O(m\cdot\#\text{atomów})$. Ale \textbf{forma 1 (z $S_2$ wbudowanym w sumaryzator} jako
+$\min(\mu_{S_1},\mu_{S_2})$) liczy się \textbf{taniej}, bo:
+\begin{itemize}[leftmargin=*]
+\item potrzebuje tylko jednego akumulatora ($\sum\mu_S$) i prostej średniej, bez
+  warunkowego dzielenia przez $\sum\mu_W$;
+\item \emph{nie} uruchamia miar kwalifikatora $T_9,T_{10},T_{11}$ (w formie 1 są zerowe).
+\end{itemize}
+W kodzie widać to wprost: gałąź \code{form2} w \code{QualityMeasures} dokłada akumulatory
+\code{sumR}, \code{sumRandS}, \code{countRpos}, \code{countRSpos} oraz cały blok
+$T_9$--$T_{11}$. Wniosek: \textbf{przeniesienie $S_2$ do sumaryzatora (forma 1) jest
+szybsze} niż użycie go jako osobnego kwalifikatora (forma 2), choć rząd złożoności ten sam.
+Semantycznie jednak liczą \emph{co innego} (forma 1 --- ,,$Q$ aut jest $S_1$ \emph{i}
+$S_2$''; forma 2 --- ,,$Q$ \emph{spośród} aut $S_2$ jest $S_1$'').
+
+% =====================================================================
+\section*{Szybka ściąga --- jednym zdaniem}
+\addcontentsline{toc}{section}{Szybka ściąga}
+\begin{itemize}[leftmargin=*,nosep]
+\item Iloczyn $=\min$ (t-norma, AND), suma $=\max$ (s-norma, OR), dopełnienie $=1-\mu$.
+\item Kardynalność $=\Sigma$-count $=\sum\mu$; względna $=$ to / $|X|$.
+\item Poziom rozmytości $\inn(A)=|\text{supp}|/|X|$; nieprecyzyjność $=1-\inn$.
+\item Nośnik: $\mu>0$; $\alpha$-przekrój: $\mu\ge\alpha$.
+\item Sąsiedztwo $=$ zwrotna+symetryczna; podobieństwo (rozmyta równoważność) $=$ jeszcze
+  przechodnia. Poincaré: percepcja łamie przechodniość $\Rightarrow$ sąsiedztwo.
+\item nGram: symetryczna i zwrotna, nieprzechodnia.
+\item Metryka: $0=$ identyczność, nierówność trójkąta wymagana; podobieństwo: $1=$
+  identyczność, bez trójkąta.
+\item $T_3$ pokrycie + $T_1$ prawda $=$ jedyne miary ,,o danych''; reszta strukturalna/formalna.
+\end{itemize}
+
+\end{document}
